@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/DodoroGit/Cake_Store/database"
 	"github.com/DodoroGit/Cake_Store/graph"
 	"github.com/DodoroGit/Cake_Store/routes"
 	"github.com/gin-gonic/gin"
@@ -8,6 +9,7 @@ import (
 
 func main() {
 	r := gin.Default()
+	database.InitDB()
 
 	// 初始化 GraphQL schema
 	graph.InitSchema()

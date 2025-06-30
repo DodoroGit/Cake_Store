@@ -9,6 +9,7 @@ var Schema graphql.Schema
 
 func InitSchema() {
 	Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
-		Query: resolver.QueryType,
+		Query:    resolver.QueryType,
+		Mutation: resolver.MutationType,
 	})
 }
