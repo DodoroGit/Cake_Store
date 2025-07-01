@@ -29,5 +29,6 @@ func main() {
 	r.Any("/graphql", routes.GraphqlHandler())
 
 	// 啟動 server
-	r.Run("0.0.0.0:80") // ✅ 對外監聽 HTTP Port
+	r.Run("0.0.0.0:8080")
+
 }
