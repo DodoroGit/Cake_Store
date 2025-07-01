@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: cake_frontend
+    ports:
+      - "3000:80"
+    networks:
+      - cake_net
+
+  backend:
+    build: ./backend
+    container_name: cake_backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - cake_net
+    env_file:
+      - ./backend/.env
+
+  db:
+    image: postgres:14
+    container_name: cake_db
+    restart: always
+    environment:
+      POSTGRES_USER: cakestore_user
+      POSTGRES_PASSWORD: cakestore_pass
+      POSTGRES_DB: cakestore
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - cake_net
+
+volumes:
+  pgdata:
+
+networks:
+  cake_net:
