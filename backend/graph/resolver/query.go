@@ -90,4 +90,33 @@ func init() {
 		},
 	})
 
+	QueryType.AddFieldConfig("meInfo", &graphql.Field{
+		Type: graphql.NewObject(graphql.ObjectConfig{
+			Name: "MeInfo",
+			Fields: graphql.Fields{
+				"email": &graphql.Field{Type: graphql.String},
+				"phone": &graphql.Field{Type: graphql.String},
+				"role":  &graphql.Field{Type: graphql.String},
+			},
+		}),
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			userID, ok := GetUserIDFromParams(p)
+			if !ok {
+				return nil, errors.New("未登入")
+			}
+
+			row := database.DB.QueryRow(`SELECT email, phone, role FROM users WHERE id=$1`, userID)
+			var email, phone, role string
+			if err := row.Scan(&email, &phone, &role); err != nil {
+				return nil, err
+			}
+
+			return map[string]interface{}{
+				"email": email,
+				"phone": phone,
+				"role":  role,
+			}, nil
+		},
+	})
+
 }
