@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>會員註冊</title>
+</head>
+<body>
+  <h1>📝 會員註冊</h1>
+
+  <form id="register-form">
+    <label>Email: <input type="email" id="email" required /></label><br/>
+    <label>Password: <input type="password" id="password" required /></label><br/>
+    <label>Phone: <input type="text" id="phone" required /></label><br/>
+    <button type="submit">註冊</button>
+  </form>
+
+  <p id="message" style="color: green;"></p>
+
+  <script>
+    document.getElementById("register-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const phone = document.getElementById("phone").value;
+
+      const res = await fetch("/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `
+            mutation {
+              register(email: "${email}", password: "${password}", phone: "${phone}")
+            }
+          `
+        })
+      });
+
+      const result = await res.json();
+      const msg = result.data?.register || result.errors?.[0]?.message || "註冊失敗";
+      const messageBox = document.getElementById("message");
+
+      messageBox.textContent = msg;
+
+      if (msg === "註冊成功") {
+        messageBox.style.color = "green";
+        setTimeout(() => {
+          window.location.href = "login.html"; // 跳轉去登入頁
+        }, 1500);
+      } else {
+        messageBox.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>
