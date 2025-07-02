@@ -3,6 +3,7 @@ package resolver
 import (
 	"errors"
 
+	"github.com/DodoroGit/Cake_Store/database"
 	"github.com/DodoroGit/Cake_Store/middlewares"
 	"github.com/graphql-go/graphql"
 )
@@ -32,4 +33,61 @@ func init() {
 			return "你的 User ID 是：" + string(rune(userID)), nil
 		},
 	})
+	QueryType.AddFieldConfig("myOrders", &graphql.Field{
+		Type: graphql.NewList(OrderType),
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			userID, ok := GetUserIDFromParams(p)
+			if !ok {
+				return nil, errors.New("未登入")
+			}
+
+			rows, err := database.DB.Query(
+				`SELECT id, created_at, status FROM orders WHERE user_id=$1 ORDER BY created_at DESC`, userID)
+			if err != nil {
+				return nil, err
+			}
+			defer rows.Close()
+
+			var result []map[string]interface{}
+
+			for rows.Next() {
+				var id int
+				var createdAt string
+				var status string
+				if err := rows.Scan(&id, &createdAt, &status); err != nil {
+					continue
+				}
+
+				// 查詢此訂單的項目
+				itemRows, _ := database.DB.Query(`
+				SELECT p.name, oi.quantity, oi.price
+				FROM order_items oi
+				JOIN products p ON p.id = oi.product_id
+				WHERE oi.order_id=$1`, id)
+
+				var items []map[string]interface{}
+				for itemRows.Next() {
+					var name string
+					var quantity int
+					var price float64
+					itemRows.Scan(&name, &quantity, &price)
+					items = append(items, map[string]interface{}{
+						"productName": name,
+						"quantity":    quantity,
+						"price":       price,
+					})
+				}
+				itemRows.Close()
+
+				result = append(result, map[string]interface{}{
+					"id":        id,
+					"createdAt": createdAt,
+					"status":    status,
+					"items":     items,
+				})
+			}
+			return result, nil
+		},
+	})
+
 }

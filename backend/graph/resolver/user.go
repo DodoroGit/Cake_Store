@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/DodoroGit/Cake_Store/database"
+	"github.com/DodoroGit/Cake_Store/middlewares"
 	"github.com/DodoroGit/Cake_Store/models"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/graphql-go/graphql"
@@ -78,5 +79,72 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				return tokenString, nil
 			},
 		},
+		"createOrder": &graphql.Field{
+			Type:        graphql.String,
+			Description: "建立一筆訂單",
+			Args: graphql.FieldConfigArgument{
+				"items": &graphql.ArgumentConfig{
+					Type: graphql.NewList(graphql.NewInputObject(graphql.InputObjectConfig{
+						Name: "OrderItemInput",
+						Fields: graphql.InputObjectConfigFieldMap{
+							"productID": &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Int)},
+							"quantity":  &graphql.InputObjectFieldConfig{Type: graphql.NewNonNull(graphql.Int)},
+						},
+					})),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				userID, ok := GetUserIDFromParams(p)
+				if !ok {
+					return nil, errors.New("未登入")
+				}
+
+				items := p.Args["items"].([]interface{})
+
+				tx, err := database.DB.Begin()
+				if err != nil {
+					return nil, err
+				}
+
+				var orderID int
+				err = tx.QueryRow(
+					`INSERT INTO orders (user_id) VALUES ($1) RETURNING id`,
+					userID,
+				).Scan(&orderID)
+				if err != nil {
+					tx.Rollback()
+					return nil, err
+				}
+
+				for _, i := range items {
+					item := i.(map[string]interface{})
+					productID := int(item["productID"].(int))
+					quantity := int(item["quantity"].(int))
+
+					var price float64
+					err := tx.QueryRow(`SELECT price FROM products WHERE id=$1`, productID).Scan(&price)
+					if err != nil {
+						tx.Rollback()
+						return nil, errors.New("商品不存在")
+					}
+
+					_, err = tx.Exec(
+						`INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)`,
+						orderID, productID, quantity, price,
+					)
+					if err != nil {
+						tx.Rollback()
+						return nil, err
+					}
+				}
+
+				tx.Commit()
+				return "訂單建立成功", nil
+			},
+		},
 	},
 })
+
+func GetUserIDFromParams(p graphql.ResolveParams) (int, bool) {
+	return middlewares.GetUserIDFromContext(p.Context)
+}
