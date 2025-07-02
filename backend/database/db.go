@@ -30,20 +30,47 @@ func InitDB() {
 		log.Fatal("Ping 資料庫失敗：", err)
 	}
 
-	createUserTable()
+	createTables()
 }
 
-func createUserTable() {
-	query := `
-	CREATE TABLE IF NOT EXISTS users (
-		id SERIAL PRIMARY KEY,
-		email TEXT UNIQUE NOT NULL,
-		password TEXT NOT NULL,
-		phone TEXT NOT NULL
-	);
-	`
-	if _, err := DB.Exec(query); err != nil {
-		log.Fatal("建立 user 資料表失敗：", err)
+func createTables() {
+	queries := []string{
+		`CREATE TABLE IF NOT EXISTS users (
+			id SERIAL PRIMARY KEY,
+			email TEXT UNIQUE NOT NULL,
+			password TEXT NOT NULL,
+			phone TEXT NOT NULL,
+			role TEXT NOT NULL DEFAULT 'user'
+		);`,
+
+		`CREATE TABLE IF NOT EXISTS products (
+			id SERIAL PRIMARY KEY,
+			name TEXT NOT NULL,
+			description TEXT,
+			price NUMERIC NOT NULL,
+			image_url TEXT
+		);`,
+
+		`CREATE TABLE IF NOT EXISTS orders (
+			id SERIAL PRIMARY KEY,
+			user_id INTEGER REFERENCES users(id),
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			status TEXT DEFAULT 'pending'
+		);`,
+
+		`CREATE TABLE IF NOT EXISTS order_items (
+			id SERIAL PRIMARY KEY,
+			order_id INTEGER REFERENCES orders(id),
+			product_id INTEGER REFERENCES products(id),
+			quantity INTEGER NOT NULL,
+			price NUMERIC NOT NULL
+		);`,
+	}
+
+	for _, q := range queries {
+		if _, err := DB.Exec(q); err != nil {
+			log.Fatal("❌ 建表失敗：", err)
+		}
 	}
 }
 
