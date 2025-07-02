@@ -119,4 +119,40 @@ func init() {
 		},
 	})
 
+	QueryType.AddFieldConfig("products", &graphql.Field{
+		Type: graphql.NewList(graphql.NewObject(graphql.ObjectConfig{
+			Name: "Product",
+			Fields: graphql.Fields{
+				"id":          &graphql.Field{Type: graphql.Int},
+				"name":        &graphql.Field{Type: graphql.String},
+				"description": &graphql.Field{Type: graphql.String},
+				"price":       &graphql.Field{Type: graphql.Float},
+				"imageUrl":    &graphql.Field{Type: graphql.String},
+			},
+		})),
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			rows, err := database.DB.Query(`SELECT id, name, description, price, image_url FROM products`)
+			if err != nil {
+				return nil, err
+			}
+			defer rows.Close()
+
+			var result []map[string]interface{}
+			for rows.Next() {
+				var id int
+				var name, desc, image string
+				var price float64
+				rows.Scan(&id, &name, &desc, &price, &image)
+				result = append(result, map[string]interface{}{
+					"id":          id,
+					"name":        name,
+					"description": desc,
+					"price":       price,
+					"imageUrl":    image,
+				})
+			}
+			return result, nil
+		},
+	})
+
 }
