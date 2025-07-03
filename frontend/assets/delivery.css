@@ -1,0 +1,27 @@
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    padding: 2rem;
+}
+.product-card {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+}
+.product-card img {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+}
+.product-card button {
+    margin-top: 0.5rem;
+    padding: 0.4rem 1rem;
+    border: none;
+    background-color: #d2691e;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
