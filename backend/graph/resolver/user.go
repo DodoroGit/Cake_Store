@@ -142,6 +142,32 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				return "訂單建立成功", nil
 			},
 		},
+		"createProduct": &graphql.Field{
+			Type:        graphql.String,
+			Description: "新增商品",
+			Args: graphql.FieldConfigArgument{
+				"name":        &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				"description": &graphql.ArgumentConfig{Type: graphql.String},
+				"price":       &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Float)},
+				"imageUrl":    &graphql.ArgumentConfig{Type: graphql.String},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				name := p.Args["name"].(string)
+				description, _ := p.Args["description"].(string)
+				price := p.Args["price"].(float64)
+				imageUrl, _ := p.Args["imageUrl"].(string)
+
+				_, err := database.DB.Exec(`
+					INSERT INTO products (name, description, price, image_url)
+					VALUES ($1, $2, $3, $4)
+				`, name, description, price, imageUrl)
+
+				if err != nil {
+					return nil, err
+				}
+				return "商品新增成功", nil
+			},
+		},
 	},
 })
 
