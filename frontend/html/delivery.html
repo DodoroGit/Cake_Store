@@ -47,6 +47,55 @@
     </div>
   </main>
 
+  <div style="text-align: center; margin-bottom: 1rem;">
+    <button onclick="addProduct()">➕ 新增商品</button>
+  </div>
+
+  <script>
+    function addProduct() {
+      const name = prompt("請輸入商品名稱");
+      if (!name) return;
+
+      const price = parseFloat(prompt("請輸入價格"));
+      if (isNaN(price)) return alert("價格無效");
+
+      const imageUrl = prompt("請輸入圖片網址");
+      const description = prompt("請輸入商品描述（可留空）");
+
+      const token = localStorage.getItem("token");
+
+      fetch("/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          query: `
+            mutation {
+              createProduct(
+                name: "${name}",
+                description: "${description || ""}",
+                price: ${price},
+                imageUrl: "${imageUrl || ""}"
+              )
+            }
+          `
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.errors) {
+          alert("新增失敗：" + res.errors[0].message);
+        } else {
+          alert("✅ 新增成功！");
+          location.reload();
+        }
+      });
+    }
+  </script>
+
+
   <script>
     const token = localStorage.getItem("token");
 
