@@ -55,7 +55,8 @@ func createTables() {
 			id SERIAL PRIMARY KEY,
 			user_id INTEGER REFERENCES users(id),
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			status TEXT DEFAULT 'pending'
+			status TEXT DEFAULT 'pending',
+			pickup_date DATE 
 		);`,
 
 		`CREATE TABLE IF NOT EXISTS order_items (

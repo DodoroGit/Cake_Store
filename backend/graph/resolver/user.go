@@ -92,11 +92,19 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 						},
 					})),
 				},
+				"pickupDate": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)}, // ✅ 新增
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				userID, ok := GetUserIDFromParams(p)
 				if !ok {
 					return nil, errors.New("未登入")
+				}
+
+				// ✅ 解析取貨日期字串
+				pickupDateStr := p.Args["pickupDate"].(string)
+				pickupDate, err := time.Parse("2006-01-02", pickupDateStr)
+				if err != nil {
+					return nil, errors.New("取貨日期格式錯誤")
 				}
 
 				items := p.Args["items"].([]interface{})
@@ -108,8 +116,8 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 
 				var orderID int
 				err = tx.QueryRow(
-					`INSERT INTO orders (user_id) VALUES ($1) RETURNING id`,
-					userID,
+					`INSERT INTO orders (user_id, pickup_date) VALUES ($1, $2) RETURNING id`,
+					userID, pickupDate, // ✅ 寫入 pickup_date
 				).Scan(&orderID)
 				if err != nil {
 					tx.Rollback()
@@ -142,6 +150,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				return "訂單建立成功", nil
 			},
 		},
+
 		"createProduct": &graphql.Field{
 			Type:        graphql.String,
 			Description: "新增商品",
