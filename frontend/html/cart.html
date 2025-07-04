@@ -22,16 +22,22 @@
       <a href="member.html" class="member-btn">會員專區</a>
     </nav>
   </header>
+
   <h1>🛒 我的購物車</h1>
 
-  <div id="cart-items"></div>
-  <label for="pickup-date">取貨日期：</label>
-  <input type="date" id="pickup-date" name="pickup-date" required />
-  <p id="total"></p>
+  <div class="cart-container">
+    <div id="cart-items"></div>
 
-  <button onclick="submitOrder()">送出訂單</button>
-  <button onclick="clearCart()">清空購物車</button>
+    <label for="pickup-date">取貨日期：</label>
+    <input type="date" id="pickup-date" name="pickup-date" required />
 
+    <p id="total"></p>
+
+    <div class="cart-actions">
+      <button onclick="submitOrder()">送出訂單</button>
+      <button onclick="clearCart()">清空購物車</button>
+    </div>
+  </div>
 
 </body>
 </html>

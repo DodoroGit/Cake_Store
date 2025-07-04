@@ -7,16 +7,19 @@ function renderCart() {
     let total = 0;
 
     cart.forEach((item, index) => {
-    const subtotal = item.price * item.quantity;
-    total += subtotal;
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
 
-    const div = document.createElement("div");
-    div.innerHTML = `
-        <h3>${item.name} - $${item.price} x ${item.quantity} = $${subtotal}</h3>
-        <button onclick="removeItem(${index})">移除</button>
-        <hr/>
-    `;
-    container.appendChild(div);
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+            <h3>${item.name}</h3>
+            <div>
+                <p>$${item.price} x ${item.quantity} = <strong>$${subtotal}</strong></p>
+                <button onclick="removeItem(${index})">移除</button>
+            </div>
+        `;
+        container.appendChild(div);
     });
 
     document.getElementById("total").textContent = "總金額：$" + total;
