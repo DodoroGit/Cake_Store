@@ -94,6 +94,7 @@ func init() {
 		Type: graphql.NewObject(graphql.ObjectConfig{
 			Name: "MeInfo",
 			Fields: graphql.Fields{
+				"name":  &graphql.Field{Type: graphql.String},
 				"email": &graphql.Field{Type: graphql.String},
 				"phone": &graphql.Field{Type: graphql.String},
 				"role":  &graphql.Field{Type: graphql.String},
@@ -105,13 +106,18 @@ func init() {
 				return nil, errors.New("未登入")
 			}
 
-			row := database.DB.QueryRow(`SELECT email, phone, role FROM users WHERE id=$1`, userID)
-			var email, phone, role string
+			row := database.DB.QueryRow(`SELECT name, email, phone, role FROM users WHERE id=$1`, userID)
+			var name, email, phone, role string
 			if err := row.Scan(&email, &phone, &role); err != nil {
 				return nil, err
 			}
 
+			if role == "user" {
+				role = "一般會員"
+			}
+
 			return map[string]interface{}{
+				"name":  name,
 				"email": email,
 				"phone": phone,
 				"role":  role,

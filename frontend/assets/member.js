@@ -27,6 +27,7 @@ fetch("/graphql", {
     query: `
       query {
         meInfo {
+          name
           email
           phone
           role
@@ -38,6 +39,7 @@ fetch("/graphql", {
   .then(res => res.json())
   .then(res => {
     const info = res.data.meInfo;
+    document.getElementById("name").value = info.name || "";
     document.getElementById("email").textContent = info.email;
     document.getElementById("phone").textContent = info.phone;
     document.getElementById("role").textContent = info.role;
@@ -92,4 +94,28 @@ fetch("/graphql", {
     });
   });
 
-  
+function updateProfile() {
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+
+  fetch("/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      query: `
+        mutation {
+          updateMe(name: "${name}", email: "${email}", phone: "${phone}")
+        }
+      `
+    })
+  })
+  .then(res => res.json())
+  .then(res => {
+    alert(res.data.updateMe || "更新成功");
+    location.reload();
+  });
+}

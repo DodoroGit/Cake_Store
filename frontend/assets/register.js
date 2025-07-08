@@ -1,6 +1,7 @@
 document.getElementById("register-form").addEventListener("submit", async function (e) {
   e.preventDefault();
 
+  const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
   const phone = document.getElementById("phone").value;
@@ -10,11 +11,11 @@ document.getElementById("register-form").addEventListener("submit", async functi
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       query: `
-        mutation Register($email: String!, $password: String!, $phone: String!) {
-          register(email: $email, password: $password, phone: $phone)
+        mutation Register($name: String!, $email: String!, $password: String!, $phone: String!) {
+          register(name: $name, email: $email, password: $password, phone: $phone)
         }
       `,
-      variables: { email, password, phone }
+      variables: { name, email, password, phone }
     })
   });
 

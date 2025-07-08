@@ -3,6 +3,7 @@ package resolver
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/DodoroGit/Cake_Store/database"
@@ -21,18 +22,20 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.String,
 			Description: "註冊帳號",
 			Args: graphql.FieldConfigArgument{
+				"name":     &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 				"email":    &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 				"password": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 				"phone":    &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				name := p.Args["name"].(string)
 				email := p.Args["email"].(string)
 				password := p.Args["password"].(string)
 				phone := p.Args["phone"].(string)
 
 				_, err := database.DB.Exec(
-					`INSERT INTO users (email, password, phone) VALUES ($1, $2, $3)`,
-					email, password, phone,
+					`INSERT INTO users (name, email, password, phone) VALUES ($1, $2, $3, $4)`,
+					name, email, password, phone,
 				)
 
 				if err != nil {
@@ -175,6 +178,54 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, err
 				}
 				return "商品新增成功", nil
+			},
+		},
+
+		"updateMe": &graphql.Field{
+			Type:        graphql.String,
+			Description: "修改會員基本資料",
+			Args: graphql.FieldConfigArgument{
+				"name":  &graphql.ArgumentConfig{Type: graphql.String},
+				"email": &graphql.ArgumentConfig{Type: graphql.String},
+				"phone": &graphql.ArgumentConfig{Type: graphql.String},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				userID, ok := GetUserIDFromParams(p)
+				if !ok {
+					return nil, errors.New("未登入")
+				}
+				// 動態組合更新欄位
+				query := "UPDATE users SET"
+				args := []interface{}{}
+				i := 1
+
+				if name, ok := p.Args["name"].(string); ok {
+					query += fmt.Sprintf(" name=$%d,", i)
+					args = append(args, name)
+					i++
+				}
+				if email, ok := p.Args["email"].(string); ok {
+					query += fmt.Sprintf(" email=$%d,", i)
+					args = append(args, email)
+					i++
+				}
+				if phone, ok := p.Args["phone"].(string); ok {
+					query += fmt.Sprintf(" phone=$%d,", i)
+					args = append(args, phone)
+					i++
+				}
+				if len(args) == 0 {
+					return nil, errors.New("未提供任何要更新的欄位")
+				}
+				query = query[:len(query)-1] // 移除最後的逗號
+				query += fmt.Sprintf(" WHERE id=$%d", i)
+				args = append(args, userID)
+
+				_, err := database.DB.Exec(query, args...)
+				if err != nil {
+					return nil, err
+				}
+				return "會員資料已更新", nil
 			},
 		},
 	},
