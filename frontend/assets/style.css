@@ -172,3 +172,9 @@ footer {
   padding: 2px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+
+/* 新增按鈕右側容器 */
+.nav-actions {
+  display: flex;
+  gap: 0.5rem;
+}
