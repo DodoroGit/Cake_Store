@@ -8,15 +8,16 @@ body {
 h1 {
   text-align: center;
   margin-bottom: 2rem;
-  color: #b05b00;
+  font-size: 2rem;
+  color: #d0708c;
 }
 
 .cart-container {
   max-width: 800px;
   margin: 0 auto;
   background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(255, 182, 193, 0.15);
   padding: 2rem;
 }
 
@@ -24,34 +25,37 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px dashed #e0cfa0;
+  border-bottom: 1px dashed #f5c6cb;
   padding: 1rem 0;
 }
 
 .cart-item h3 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  color: #5c3c1a;
 }
 
 .cart-item button {
-  background-color: #f08080;
+  background-color: #ff88aa;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 999px;
   padding: 0.4rem 1rem;
   cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
 }
 
 .cart-item button:hover {
-  background-color: #e57373;
+  background-color: #ff5e87;
 }
 
 #pickup-date {
   width: 100%;
-  margin: 1rem 0;
+  margin: 1.5rem 0 0.5rem;
   padding: 0.6rem;
   font-size: 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
@@ -61,6 +65,7 @@ h1 {
   font-weight: bold;
   font-size: 1.3rem;
   margin-top: 1.5rem;
+  color: #a0522d;
 }
 
 .cart-actions {
@@ -73,11 +78,12 @@ h1 {
   color: white;
   padding: 0.7rem 1.4rem;
   font-size: 1rem;
-  border-radius: 8px;
+  border-radius: 999px;
   border: none;
   margin: 0.5rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  font-weight: bold;
 }
 
 .cart-actions button:hover {
