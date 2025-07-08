@@ -151,3 +151,24 @@ footer {
   margin-top: 3rem;
   border-top: 1px solid #f0e6cd;
 }
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #d2691e;
+  white-space: nowrap;
+  gap: 0.5rem;
+}
+
+.logo-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 2px solid #ffc4d1;
+  background-color: #fff0f5;
+  padding: 2px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
