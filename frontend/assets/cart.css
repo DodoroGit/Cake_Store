@@ -1,27 +1,22 @@
-body {
-  background-color: #fffdf4;
-  font-family: 'Noto Sans TC', sans-serif;
-  color: #5a3e1b;
-  padding: 2rem;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  color: #d0708c;
-}
-
 .cart-container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 2rem auto;
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 6px 18px rgba(255, 182, 193, 0.15);
   padding: 2rem;
+  font-family: 'Noto Sans TC', sans-serif;
+  color: #5a3e1b;
 }
 
-.cart-item {
+.cart-container h1 {
+  text-align: center;
+  font-size: 2rem;
+  color: #d0708c;
+  margin-bottom: 2rem;
+}
+
+.cart-container .cart-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -29,13 +24,12 @@ h1 {
   padding: 1rem 0;
 }
 
-.cart-item h3 {
+.cart-container .cart-item h3 {
   margin: 0;
   font-size: 1.05rem;
-  color: #5c3c1a;
 }
 
-.cart-item button {
+.cart-container .cart-item button {
   background-color: #ff88aa;
   color: white;
   border: none;
@@ -46,13 +40,13 @@ h1 {
   transition: background-color 0.2s ease;
 }
 
-.cart-item button:hover {
+.cart-container .cart-item button:hover {
   background-color: #ff5e87;
 }
 
-#pickup-date {
+.cart-container #pickup-date {
   width: 100%;
-  margin: 1.5rem 0 0.5rem;
+  margin: 1rem 0;
   padding: 0.6rem;
   font-size: 1rem;
   border-radius: 8px;
@@ -60,20 +54,19 @@ h1 {
   box-sizing: border-box;
 }
 
-#total {
+.cart-container #total {
   text-align: right;
   font-weight: bold;
   font-size: 1.3rem;
   margin-top: 1.5rem;
-  color: #a0522d;
 }
 
-.cart-actions {
+.cart-container .cart-actions {
   text-align: center;
   margin-top: 2rem;
 }
 
-.cart-actions button {
+.cart-container .cart-actions button {
   background-color: #ffb347;
   color: white;
   padding: 0.7rem 1.4rem;
@@ -86,6 +79,6 @@ h1 {
   font-weight: bold;
 }
 
-.cart-actions button:hover {
+.cart-container .cart-actions button:hover {
   background-color: #e89d2d;
 }

@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <title>購物車</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>購物車 - 蛋糕店</title>
   <link rel="stylesheet" href="../assets/style.css" />
   <link rel="stylesheet" href="../assets/cart.css" />
   <script src="../assets/cart.js" defer></script>
@@ -10,7 +11,7 @@
 <body>
   <header>
     <nav class="navbar">
-      <div class="logo">🍓 多巴胺甜點工作室</div>
+      <div class="logo">🎂 蛋糕店</div>
       <ul class="nav-links">
         <li><a href="index.html">回到首頁</a></li>
         <li><a href="instagram.html">Instagram</a></li>
@@ -27,21 +28,20 @@
     </nav>
   </header>
 
-  <h1>🛒 我的購物車</h1>
-
   <div class="cart-container">
+    <h1>🛒 我的購物車</h1>
+
     <div id="cart-items"></div>
 
     <label for="pickup-date">取貨日期：</label>
-    <input type="date" id="pickup-date" name="pickup-date" required />
+    <input type="date" id="pickup-date" />
 
-    <p id="total"></p>
+    <p id="total">總金額：$0</p>
 
     <div class="cart-actions">
       <button onclick="submitOrder()">送出訂單</button>
       <button onclick="clearCart()">清空購物車</button>
     </div>
   </div>
-
 </body>
 </html>
