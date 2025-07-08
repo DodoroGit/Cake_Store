@@ -14,6 +14,10 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{}, // 先空的，下面再加
 })
 
+func GetUserIDFromParams_query(p graphql.ResolveParams) (int, bool) {
+	return middlewares.GetUserIDFromContext(p.Context)
+}
+
 // ✅ 在 init 裡用 AddFieldConfig 補上 me/hello
 func init() {
 	QueryType.AddFieldConfig("hello", &graphql.Field{
@@ -36,7 +40,7 @@ func init() {
 	QueryType.AddFieldConfig("myOrders", &graphql.Field{
 		Type: graphql.NewList(OrderType),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			userID, ok := GetUserIDFromParams(p)
+			userID, ok := GetUserIDFromParams_query(p)
 			if !ok {
 				return nil, errors.New("未登入")
 			}
@@ -101,7 +105,7 @@ func init() {
 			},
 		}),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-			userID, ok := GetUserIDFromParams(p)
+			userID, ok := GetUserIDFromParams_query(p)
 			if !ok {
 				return nil, errors.New("未登入")
 			}
