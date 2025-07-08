@@ -1,0 +1,44 @@
+/* info.css - 注意事項／政策／流程等內容頁通用樣式 */
+
+.info-section {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  background-color: #fffdf8;
+  color: #5a3e1b;
+  line-height: 1.8;
+}
+
+.info-section h1 {
+  font-size: 2rem;
+  color: #ff6699;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.info-section h2 {
+  font-size: 1.4rem;
+  color: #d15b84;
+  margin-top: 2rem;
+  margin-bottom: 0.8rem;
+}
+
+.info-section p,
+.info-section ul,
+.info-section blockquote {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.info-section ul {
+  padding-left: 1.5rem;
+}
+
+.info-section blockquote {
+  background: #fff0f4;
+  border-left: 4px solid #ffa3b5;
+  padding: 1rem;
+  font-style: italic;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
