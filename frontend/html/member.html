@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>會員專區</title>
   <link rel="stylesheet" href="../assets/style.css" />
+  <link rel="stylesheet" href="../assets/member.css" />
   <script src="../assets/member.js" defer></script>
 </head>
 <body>
@@ -24,16 +25,21 @@
   </header>
   <h1>🎂 會員專區</h1>
 
-  <div id="profile">
-    <h2>👤 會員資訊</h2>
-    <p><strong>Email:</strong> <span id="email"></span></p>
-    <p><strong>Phone:</strong> <span id="phone"></span></p>
-    <p><strong>角色:</strong> <span id="role"></span></p>
+  <div class="member-container">
+    <h1>🎂 會員專區</h1>
+
+    <div id="profile" class="member-card">
+      <h2>👤 會員資訊</h2>
+      <p><strong>Email:</strong> <span id="email"></span></p>
+      <p><strong>Phone:</strong> <span id="phone"></span></p>
+      <p><strong>角色:</strong> <span id="role"></span></p>
+    </div>
+
+    <div id="orders" class="member-card">
+      <h2>🧾 我的訂單</h2>
+      <div id="order-list"></div>
+    </div>
   </div>
 
-  <div id="orders">
-    <h2>🧾 我的訂單</h2>
-    <div id="order-list"></div>
-  </div>
 </body>
 </html>
