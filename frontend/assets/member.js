@@ -5,6 +5,17 @@ if (!token) {
   window.location.href = "login.html";
 }
 
+
+function translateStatus(status) {
+  if (status === "pending") return "訂單等待接收中";
+  if (status === "received") return "訂單已接收";
+  return status;
+}
+
+function formatDate(raw) {
+  return new Date(raw).toLocaleString("zh-TW", { hour12: false });
+}
+
 // ✅ 查詢會員資訊
 fetch("/graphql", {
   method: "POST",
@@ -69,13 +80,16 @@ fetch("/graphql", {
     orders.forEach(order => {
       const div = document.createElement("div");
       div.innerHTML = `
-        <h3>訂單 #${order.id} - ${order.status}</h3>
-        <p><strong>時間：</strong>${order.createdAt}</p>
+      <div class="order-item">
+        <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
+        <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
         <ul>
           ${order.items.map(i => `<li>${i.productName} x ${i.quantity}（$${i.price}）</li>`).join("")}
         </ul>
-        <hr/>
-      `;
+      </div>
+    `;
       container.appendChild(div);
     });
   });
+
+  

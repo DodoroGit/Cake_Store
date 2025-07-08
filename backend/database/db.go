@@ -56,6 +56,7 @@ func createTables() {
 			user_id INTEGER REFERENCES users(id),
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			status TEXT DEFAULT 'pending',
+			received BOOLEAN DEFAULT false,
 			pickup_date DATE 
 		);`,
 
