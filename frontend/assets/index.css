@@ -1,32 +1,33 @@
-/* index.css - 首頁專屬樣式 */
+/* index.css - 首頁專用樣式（可愛現代風） */
 
-/* Hero 區塊美化 */
+/* Hero 區塊美化與比例修正 */
 .hero {
   background: linear-gradient(135deg, #fff0f5, #ffe5ec);
-  padding: 5rem 1rem;
-  border-radius: 20px;
+  padding: 3rem 1rem;
   margin: 2rem auto;
+  border-radius: 20px;
   max-width: 960px;
-  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25);
+  text-align: center;
 }
 
 .hero h1 {
-  font-size: 3rem;
+  font-size: 2.4rem;
   color: #d0708c;
   margin-bottom: 1rem;
   font-weight: 800;
 }
 
 .hero p {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: #a64c66;
 }
 
 /* 熱賣商品區標題美化 */
 .products h2 {
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   color: #ff7096;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   font-weight: bold;
   position: relative;
 }
@@ -41,12 +42,27 @@
   animation: sparkle 1.2s infinite ease-in-out;
 }
 
-/* 商品卡片更圓滑、色彩溫柔 */
+/* 商品區排版 */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* 商品卡片風格 */
 .product-card {
   background-color: #fff8fb;
   border: 2px solid #ffe3ec;
   border-radius: 20px;
   transition: transform 0.2s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 420px;
+  box-shadow: 0 4px 10px rgba(255, 182, 193, 0.1);
 }
 
 .product-card:hover {
@@ -54,35 +70,54 @@
   box-shadow: 0 8px 20px rgba(255, 182, 193, 0.2);
 }
 
-.product-card h3 {
-  color: #d95c8f;
-  font-weight: 600;
-  font-size: 1.3rem;
-}
-
-/* 商品圖片圓角處理 */
 .product-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
   border-radius: 20px 20px 0 0;
   border-bottom: 2px solid #ffe3ec;
 }
 
-/* 按鈕風格：更飽和、更圓、更可愛 */
+.product-card h3 {
+  font-size: 1.3rem;
+  padding: 1rem 0 0.5rem;
+  color: #d95c8f;
+  font-weight: 600;
+}
+
+/* 按鈕樣式（可愛糖果風） */
 .btn {
   background-color: #ff88aa;
   border-radius: 999px;
   padding: 0.6rem 1.4rem;
   font-size: 1rem;
   color: white;
-  box-shadow: 0 4px 8px rgba(255, 105, 135, 0.2);
+  font-weight: bold;
+  margin-bottom: 1rem;
+  cursor: pointer;
   transition: background-color 0.2s ease;
+  border: none;
 }
 
 .btn:hover {
   background-color: #ff5e87;
 }
 
-/* 閃爍動畫：星星用 */
+/* 星星動畫 */
 @keyframes sparkle {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.2); opacity: 0.6; }
+}
+
+/* 響應式微調（手機優化） */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+  .hero p {
+    font-size: 1rem;
+  }
+  .product-card {
+    height: auto;
+  }
 }
