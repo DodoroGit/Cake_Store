@@ -1,10 +1,8 @@
 const token = localStorage.getItem("token");
-
 if (!token) {
   alert("請先登入");
   window.location.href = "login.html";
 }
-
 
 function translateStatus(status) {
   if (status === "pending") return "訂單等待接收中";
@@ -36,14 +34,33 @@ fetch("/graphql", {
     `
   })
 })
-  .then(res => res.json())
-  .then(res => {
-    const info = res.data.meInfo;
-    document.getElementById("name").value = info.name || "";
-    document.getElementById("email").textContent = info.email;
-    document.getElementById("phone").textContent = info.phone;
-    document.getElementById("role").textContent = info.role;
-  });
+.then(res => res.json())
+.then(res => {
+  if (!res.data || !res.data.meInfo) {
+    alert("登入已過期，請重新登入");
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const info = res.data.meInfo;
+  document.getElementById("name").textContent = info.name || "";
+  document.getElementById("email").textContent = info.email;
+  document.getElementById("phone").textContent = info.phone;
+  document.getElementById("role").textContent = info.role;
+});
+
+// ✅ 登出按鈕
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.getElementById("logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("token");
+      alert("已登出");
+      window.location.href = "login.html";
+    });
+  }
+});
 
 // ✅ 查詢訂單資訊
 fetch("/graphql", {
@@ -69,19 +86,19 @@ fetch("/graphql", {
     `
   })
 })
-  .then(res => res.json())
-  .then(res => {
-    const orders = res.data.myOrders;
-    const container = document.getElementById("order-list");
+.then(res => res.json())
+.then(res => {
+  const orders = res.data.myOrders;
+  const container = document.getElementById("order-list");
 
-    if (!orders || orders.length === 0) {
-      container.innerHTML = "<p>尚無訂單紀錄</p>";
-      return;
-    }
+  if (!orders || orders.length === 0) {
+    container.innerHTML = "<p>尚無訂單紀錄</p>";
+    return;
+  }
 
-    orders.forEach(order => {
-      const div = document.createElement("div");
-      div.innerHTML = `
+  orders.forEach(order => {
+    const div = document.createElement("div");
+    div.innerHTML = `
       <div class="order-item">
         <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
         <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
@@ -90,32 +107,6 @@ fetch("/graphql", {
         </ul>
       </div>
     `;
-      container.appendChild(div);
-    });
+    container.appendChild(div);
   });
-
-function updateProfile() {
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const phone = document.getElementById("phone").value;
-
-  fetch("/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({
-      query: `
-        mutation {
-          updateMe(name: "${name}", email: "${email}", phone: "${phone}")
-        }
-      `
-    })
-  })
-  .then(res => res.json())
-  .then(res => {
-    alert(res.data.updateMe || "更新成功");
-    location.reload();
-  });
-}
+});

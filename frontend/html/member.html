@@ -37,7 +37,10 @@
       <p><strong>Email:</strong> <input id="email" /></p>
       <p><strong>手機:</strong> <input id="phone" /></p>
       <p><strong>身份:</strong> <span id="role"></span></p>
-      <button onclick="updateProfile()">更新資料</button>
+      <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+        <button onclick="updateProfile()">更新資料</button>
+        <button id="logout-btn">登出</button>
+      </div>
     </div>
 
     <div id="orders" class="member-card">
