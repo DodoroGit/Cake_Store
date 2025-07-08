@@ -1,0 +1,88 @@
+/* index.css - 首頁專屬樣式 */
+
+/* Hero 區塊美化 */
+.hero {
+  background: linear-gradient(135deg, #fff0f5, #ffe5ec);
+  padding: 5rem 1rem;
+  border-radius: 20px;
+  margin: 2rem auto;
+  max-width: 960px;
+  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+}
+
+.hero h1 {
+  font-size: 3rem;
+  color: #d0708c;
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
+.hero p {
+  font-size: 1.3rem;
+  color: #a64c66;
+}
+
+/* 熱賣商品區標題美化 */
+.products h2 {
+  font-size: 2.4rem;
+  color: #ff7096;
+  margin-bottom: 2.5rem;
+  font-weight: bold;
+  position: relative;
+}
+
+.products h2::after {
+  content: "★";
+  position: absolute;
+  right: -2rem;
+  top: 0;
+  color: #ffb6c1;
+  font-size: 1.8rem;
+  animation: sparkle 1.2s infinite ease-in-out;
+}
+
+/* 商品卡片更圓滑、色彩溫柔 */
+.product-card {
+  background-color: #fff8fb;
+  border: 2px solid #ffe3ec;
+  border-radius: 20px;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 20px rgba(255, 182, 193, 0.2);
+}
+
+.product-card h3 {
+  color: #d95c8f;
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+/* 商品圖片圓角處理 */
+.product-card img {
+  border-radius: 20px 20px 0 0;
+  border-bottom: 2px solid #ffe3ec;
+}
+
+/* 按鈕風格：更飽和、更圓、更可愛 */
+.btn {
+  background-color: #ff88aa;
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  color: white;
+  box-shadow: 0 4px 8px rgba(255, 105, 135, 0.2);
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+  background-color: #ff5e87;
+}
+
+/* 閃爍動畫：星星用 */
+@keyframes sparkle {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.6; }
+}

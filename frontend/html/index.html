@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>蛋糕店首頁</title>
   <link rel="stylesheet" href="../assets/style.css" />
+  <link rel="stylesheet" href="../assets/index.css" />
 </head>
 <body>
   <header>
@@ -31,16 +32,15 @@
     <h2>熱賣蛋糕</h2>
     <div class="product-grid">
       <div class="product-card">
-        <img src="images/cake1.jpg" alt="蛋糕1" />
-        <h3>巧克力熔岩</h3>
-        <a href="product1.html" class="btn">了解更多</a>
+        <img src="../assets/images/lemon_cake.jpg" alt="檸檬慕斯巴斯克" />
+        <h3>檸檬慕斯巴斯克</h3>
+        <button class="btn" onclick="addToCart(5, '檸檬慕斯巴斯克', 580)">加入購物車</button>
       </div>
       <div class="product-card">
-        <img src="images/cake2.jpg" alt="蛋糕2" />
-        <h3>草莓戀人</h3>
-        <a href="product2.html" class="btn">了解更多</a>
+        <img src="../assets/images/rose_lychee_cake.jpg" alt="玫瑰荔枝慕斯蛋糕" />
+        <h3>玫瑰荔枝慕斯蛋糕</h3>
+        <button class="btn" onclick="addToCart(6, '玫瑰荔枝慕斯蛋糕', 620)">加入購物車</button>
       </div>
-      <!-- 👉 依此類推，補到六個 -->
     </div>
   </section>
 
