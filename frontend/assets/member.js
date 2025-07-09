@@ -44,9 +44,9 @@ fetch("/graphql", {
   }
 
   const info = res.data.meInfo;
-  document.getElementById("name").textContent = info.name || "";
-  document.getElementById("email").textContent = info.email;
-  document.getElementById("phone").textContent = info.phone;
+  document.getElementById("name").value = info.name || "";
+  document.getElementById("email").value = info.email;
+  document.getElementById("phone").value = info.phone;
   document.getElementById("role").textContent = info.role;
 });
 
@@ -76,6 +76,8 @@ fetch("/graphql", {
           id
           createdAt
           status
+          pickupDate
+          totalAmount
           items {
             productName
             quantity
@@ -102,6 +104,8 @@ fetch("/graphql", {
       <div class="order-item">
         <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
         <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
+        <p><strong>領取日期：</strong>${order.pickupDate || "未指定"}</p>
+        <p><strong>總金額：</strong>$${order.totalAmount.toFixed(0)}</p>
         <ul>
           ${order.items.map(i => `<li>${i.productName} x ${i.quantity}（$${i.price}）</li>`).join("")}
         </ul>

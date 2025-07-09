@@ -14,9 +14,11 @@ var OrderItemType = graphql.NewObject(graphql.ObjectConfig{
 var OrderType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Order",
 	Fields: graphql.Fields{
-		"id":        &graphql.Field{Type: graphql.Int},
-		"createdAt": &graphql.Field{Type: graphql.String},
-		"status":    &graphql.Field{Type: graphql.String},
-		"items":     &graphql.Field{Type: graphql.NewList(OrderItemType)},
+		"id":          &graphql.Field{Type: graphql.Int},
+		"createdAt":   &graphql.Field{Type: graphql.String},
+		"status":      &graphql.Field{Type: graphql.String},
+		"items":       &graphql.Field{Type: graphql.NewList(OrderItemType)},
+		"totalAmount": &graphql.Field{Type: graphql.Float},
+		"pickupDate":  &graphql.Field{Type: graphql.String},
 	},
 })

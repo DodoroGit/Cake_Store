@@ -1,6 +1,7 @@
 package resolver
 
 import (
+	"database/sql"
 	"errors"
 
 	"github.com/DodoroGit/Cake_Store/database"
@@ -41,8 +42,12 @@ func init() {
 				return nil, errors.New("未登入")
 			}
 
-			rows, err := database.DB.Query(
-				`SELECT id, created_at, status FROM orders WHERE user_id=$1 ORDER BY created_at DESC`, userID)
+			rows, err := database.DB.Query(`
+				SELECT id, created_at, status, pickup_date
+				FROM orders
+				WHERE user_id=$1
+				ORDER BY created_at DESC
+			`, userID)
 			if err != nil {
 				return nil, err
 			}
@@ -52,20 +57,22 @@ func init() {
 
 			for rows.Next() {
 				var id int
-				var createdAt string
-				var status string
-				if err := rows.Scan(&id, &createdAt, &status); err != nil {
+				var createdAt, status string
+				var pickupDate sql.NullString
+				if err := rows.Scan(&id, &createdAt, &status, &pickupDate); err != nil {
 					continue
 				}
 
-				// 查詢此訂單的項目
+				// 查詢訂單的項目
 				itemRows, _ := database.DB.Query(`
-				SELECT p.name, oi.quantity, oi.price
-				FROM order_items oi
-				JOIN products p ON p.id = oi.product_id
-				WHERE oi.order_id=$1`, id)
+					SELECT p.name, oi.quantity, oi.price
+					FROM order_items oi
+					JOIN products p ON p.id = oi.product_id
+					WHERE oi.order_id=$1
+				`, id)
 
 				var items []map[string]interface{}
+				var total float64
 				for itemRows.Next() {
 					var name string
 					var quantity int
@@ -76,16 +83,20 @@ func init() {
 						"quantity":    quantity,
 						"price":       price,
 					})
+					total += price * float64(quantity)
 				}
 				itemRows.Close()
 
 				result = append(result, map[string]interface{}{
-					"id":        id,
-					"createdAt": createdAt,
-					"status":    status,
-					"items":     items,
+					"id":          id,
+					"createdAt":   createdAt,
+					"status":      status,
+					"items":       items,
+					"totalAmount": total,
+					"pickupDate":  pickupDate.String,
 				})
 			}
+
 			return result, nil
 		},
 	})
