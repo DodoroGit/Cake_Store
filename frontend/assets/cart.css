@@ -82,3 +82,15 @@
 .cart-container .cart-actions button:hover {
   background-color: #e89d2d;
 }
+
+.cart-container .quantity {
+  margin: 0 0.6rem;
+  font-weight: bold;
+  display: inline-block;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.cart-container .cart-item button {
+  margin: 0 2px;
+}

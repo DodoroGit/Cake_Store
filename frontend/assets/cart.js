@@ -15,7 +15,12 @@ function renderCart() {
         div.innerHTML = `
             <h3>${item.name}</h3>
             <div>
-                <p>$${item.price} x ${item.quantity} = <strong>$${subtotal}</strong></p>
+                <p>$${item.price} x 
+                    <button onclick="changeQuantity(${index}, -1)">➖</button>
+                    <span class="quantity">${item.quantity}</span>
+                    <button onclick="changeQuantity(${index}, 1)">➕</button>
+                    = <strong>$${subtotal}</strong>
+                </p>
                 <button onclick="removeItem(${index})">移除</button>
             </div>
         `;
@@ -24,6 +29,16 @@ function renderCart() {
 
     document.getElementById("total").textContent = "總金額：$" + total;
 }
+
+function changeQuantity(index, delta) {
+    cart[index].quantity += delta;
+    if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+    renderCart();
+}
+
 
 function removeItem(index) {
     cart.splice(index, 1);
