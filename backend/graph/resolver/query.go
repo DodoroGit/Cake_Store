@@ -172,4 +172,76 @@ func init() {
 		},
 	})
 
+	QueryType.AddFieldConfig("allOrders", &graphql.Field{
+		Type: graphql.NewList(OrderType),
+		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+			userID, ok := GetUserIDFromParams(p)
+			if !ok {
+				return nil, errors.New("未登入")
+			}
+
+			// 檢查身分
+			var role string
+			err := database.DB.QueryRow(`SELECT role FROM users WHERE id=$1`, userID).Scan(&role)
+			if err != nil || role != "admin" {
+				return nil, errors.New("沒有權限")
+			}
+
+			rows, err := database.DB.Query(`
+			SELECT id, created_at, status, pickup_date
+			FROM orders
+			ORDER BY created_at DESC
+		`)
+			if err != nil {
+				return nil, err
+			}
+			defer rows.Close()
+
+			var result []map[string]interface{}
+
+			for rows.Next() {
+				var id int
+				var createdAt, status string
+				var pickupDate sql.NullString
+				if err := rows.Scan(&id, &createdAt, &status, &pickupDate); err != nil {
+					continue
+				}
+
+				itemRows, _ := database.DB.Query(`
+				SELECT p.name, oi.quantity, oi.price
+				FROM order_items oi
+				JOIN products p ON p.id = oi.product_id
+				WHERE oi.order_id=$1
+			`, id)
+
+				var items []map[string]interface{}
+				var total float64
+				for itemRows.Next() {
+					var name string
+					var quantity int
+					var price float64
+					itemRows.Scan(&name, &quantity, &price)
+					items = append(items, map[string]interface{}{
+						"productName": name,
+						"quantity":    quantity,
+						"price":       price,
+					})
+					total += price * float64(quantity)
+				}
+				itemRows.Close()
+
+				result = append(result, map[string]interface{}{
+					"id":          id,
+					"createdAt":   createdAt,
+					"status":      status,
+					"items":       items,
+					"totalAmount": total,
+					"pickupDate":  pickupDate.String,
+				})
+			}
+
+			return result, nil
+		},
+	})
+
 }
