@@ -66,3 +66,24 @@
   margin-top: 0.5rem;
   font-size: 0.95rem;
 }
+
+/* 新增：會員欄位橫向整齊排版 */
+.profile-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  gap: 1rem;
+}
+
+.profile-row label {
+  width: 80px;
+  font-weight: bold;
+  color: #5c3c1a;
+}
+
+.profile-row input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}

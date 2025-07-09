@@ -31,10 +31,10 @@
 
     <div id="profile" class="member-card">
       <h2>👤 會員資訊</h2>
-      <p><strong>名稱:</strong> <input id="name" /></p>
-      <p><strong>Email:</strong> <input id="email" /></p>
-      <p><strong>手機:</strong> <input id="phone" /></p>
-      <p><strong>身份:</strong> <span id="role"></span></p>
+      <div class="profile-row"><label for="name">名稱：</label><input id="name" /></div>
+      <div class="profile-row"><label for="email">Email：</label><input id="email" /></div>
+      <div class="profile-row"><label for="phone">手機：</label><input id="phone" /></div>
+      <div class="profile-row"><label>身份：</label><span id="role"></span></div>
       <div style="display: flex; gap: 1rem; margin-top: 1rem;">
         <button onclick="updateProfile()">更新資料</button>
         <button id="logout-btn">登出</button>

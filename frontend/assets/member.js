@@ -104,7 +104,7 @@ fetch("/graphql", {
       <div class="order-item">
         <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
         <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
-        <p><strong>領取日期：</strong>${order.pickupDate || "未指定"}</p>
+        <p><strong>領取日期：</strong>${order.pickupDate ? new Date(order.pickupDate).toLocaleDateString("zh-TW") : "未指定"}</p>
         <p><strong>總金額：</strong>$${order.totalAmount.toFixed(0)}</p>
         <ul>
           ${order.items.map(i => `<li>${i.productName} x ${i.quantity}（$${i.price}）</li>`).join("")}
