@@ -78,6 +78,8 @@ function loadProducts() {
           <img src="${p.imageUrl}" alt="${p.name}" />
           <h3>${p.name}</h3>
           <p>$${p.price}</p>
+          <input type="number" id="qty-${p.id}" min="1" value="1" style="width: 60px; margin-top: 5px;" />
+          <br/>
           <button onclick="addToCart(${p.id}, '${p.name}', ${p.price})">加入購物車</button>
         `;
         container.appendChild(div);
@@ -87,16 +89,59 @@ function loadProducts() {
 
 // ✅ 加入購物車功能
 function addToCart(id, name, price) {
+  const qtyInput = document.getElementById(`qty-${id}`);
+  const quantity = parseInt(qtyInput.value) || 1;
+
   const cart = JSON.parse(localStorage.getItem("cart") || "[]");
   const existing = cart.find(i => i.productID === id);
   if (existing) {
-    existing.quantity += 1;
+    existing.quantity += quantity;
   } else {
-    cart.push({ productID: id, name, price, quantity: 1 });
+    cart.push({ productID: id, name, price, quantity });
   }
+
   localStorage.setItem("cart", JSON.stringify(cart));
-  alert(`${name} 已加入購物車！`);
+  alert(`${name} 已加入購物車（數量：${quantity}）！`);
 }
 
-// ✅ 頁面載入時載入商品
-document.addEventListener("DOMContentLoaded", loadProducts);
+// ✅ 權限檢查：非 admin 隱藏新增按鈕
+function checkAdmin() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    document.querySelector("button[onclick='addProduct()']").style.display = "none";
+    return;
+  }
+
+  fetch("/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      query: `
+        {
+          meInfo {
+            role
+          }
+        }
+      `
+    })
+  })
+    .then(res => res.json())
+    .then(res => {
+      const role = res.data?.meInfo?.role;
+      if (!role || role !== "admin") {
+        document.querySelector("button[onclick='addProduct()']").style.display = "none";
+      }
+    })
+    .catch(() => {
+      document.querySelector("button[onclick='addProduct()']").style.display = "none";
+    });
+}
+
+// ✅ 頁面載入時執行
+document.addEventListener("DOMContentLoaded", () => {
+  loadProducts();
+  checkAdmin();
+});
