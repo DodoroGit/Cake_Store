@@ -4,9 +4,12 @@ if (!token) {
   window.location.href = "login.html";
 }
 
+let currentUserRole = "user"; // 預設為 user
+
 function translateStatus(status) {
   if (status === "pending") return "訂單等待接收中";
-  if (status === "received") return "訂單已接收";
+  if (status === "received") return "已接收訂單等待付款";
+  if (status === "paid") return "已付款訂單進行中";
   return status;
 }
 
@@ -14,7 +17,7 @@ function formatDate(raw) {
   return new Date(raw).toLocaleString("zh-TW", { hour12: false });
 }
 
-// ✅ 查詢會員資訊
+// 查詢會員資訊
 fetch("/graphql", {
   method: "POST",
   headers: {
@@ -44,13 +47,19 @@ fetch("/graphql", {
   }
 
   const info = res.data.meInfo;
+  currentUserRole = info.role === "admin" ? "admin" : "user";
   document.getElementById("name").value = info.name || "";
   document.getElementById("email").value = info.email;
   document.getElementById("phone").value = info.phone;
-  document.getElementById("role").textContent = info.role;
+  document.getElementById("role").textContent = (currentUserRole === "admin") ? "商店主" : "一般會員";
+
+  // 調整訂單區塊標題
+  if (currentUserRole === "admin") {
+    document.getElementById("order-title").textContent = "📋 訂單管理系統";
+  }
 });
 
-// ✅ 登出按鈕
+// 登出按鈕功能
 document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
@@ -62,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// ✅ 查詢訂單資訊
+// 查詢訂單資訊
 fetch("/graphql", {
   method: "POST",
   headers: {
@@ -100,6 +109,21 @@ fetch("/graphql", {
 
   orders.forEach(order => {
     const div = document.createElement("div");
+
+    let statusControls = "";
+    if (currentUserRole === "admin") {
+      statusControls = `
+        <div style="margin-top: 0.5rem;">
+          <label><strong>更改狀態：</strong></label>
+          <select onchange="updateOrderStatus(${order.id}, this.value)">
+            <option value="pending" ${order.status === "pending" ? "selected" : ""}>等待接收</option>
+            <option value="received" ${order.status === "received" ? "selected" : ""}>等待付款</option>
+            <option value="paid" ${order.status === "paid" ? "selected" : ""}>進行中</option>
+          </select>
+        </div>
+      `;
+    }
+
     div.innerHTML = `
       <div class="order-item">
         <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
@@ -109,8 +133,36 @@ fetch("/graphql", {
         <ul>
           ${order.items.map(i => `<li>${i.productName} x ${i.quantity}（$${i.price}）</li>`).join("")}
         </ul>
+        ${statusControls}
       </div>
     `;
     container.appendChild(div);
   });
 });
+
+// 管理員更新訂單狀態
+function updateOrderStatus(orderId, newStatus) {
+  fetch("/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      query: `
+        mutation {
+          updateOrderStatus(orderId: ${orderId}, status: "${newStatus}")
+        }
+      `
+    })
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.data && res.data.updateOrderStatus === "OK") {
+      alert("訂單狀態已更新");
+      location.reload();
+    } else {
+      alert("更新失敗");
+    }
+  });
+}

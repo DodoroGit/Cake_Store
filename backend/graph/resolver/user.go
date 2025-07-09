@@ -228,6 +228,34 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				return "會員資料已更新", nil
 			},
 		},
+		"updateOrderStatus": &graphql.Field{
+			Type: graphql.String,
+			Args: graphql.FieldConfigArgument{
+				"orderId": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.Int)},
+				"status":  &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				userID, ok := GetUserIDFromParams(p)
+				if !ok {
+					return nil, errors.New("未登入")
+				}
+				// 檢查角色
+				var role string
+				err := database.DB.QueryRow(`SELECT role FROM users WHERE id=$1`, userID).Scan(&role)
+				if err != nil || role != "admin" {
+					return nil, errors.New("無權限")
+				}
+
+				orderId := p.Args["orderId"].(int)
+				status := p.Args["status"].(string)
+
+				_, err = database.DB.Exec(`UPDATE orders SET status=$1 WHERE id=$2`, status, orderId)
+				if err != nil {
+					return nil, err
+				}
+				return "OK", nil
+			},
+		},
 	},
 })
 
