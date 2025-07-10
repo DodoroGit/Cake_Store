@@ -18,7 +18,7 @@ function formatDate(raw) {
   return new Date(raw).toLocaleString("zh-TW", { hour12: false });
 }
 
-// ✅ 會員資料查詢
+// ✅ 初始化會員資訊
 fetch("/graphql", {
   method: "POST",
   headers: {
@@ -77,28 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const sortSelect = document.getElementById("sort-select");
   if (sortSelect) {
     sortSelect.addEventListener("change", () => {
-      const sortBy = sortSelect.value;
-      const sorted = [...ordersData];
-
-      sorted.sort((a, b) => {
-        if (sortBy === "createdAt" || sortBy === "pickupDate") {
-          return new Date(a[sortBy]) - new Date(b[sortBy]);
-        }
-        if (sortBy === "totalAmount") {
-          return b.totalAmount - a.totalAmount;
-        }
-        if (sortBy === "status") {
-          return a.status.localeCompare(b.status);
-        }
-        return 0;
-      });
-
-      renderOrders(sorted);
+      const sorted = sortOrders([...ordersData], sortSelect.value);
+      if (currentUserRole === "admin") {
+        renderOrdersAdmin(sorted);
+      }
     });
   }
 });
 
-// ✅ 查詢訂單資料
 function fetchOrders() {
   const queryName = currentUserRole === "admin" ? "allOrders" : "myOrders";
 
@@ -130,12 +116,33 @@ function fetchOrders() {
     .then(res => res.json())
     .then(res => {
       ordersData = res.data[queryName] || [];
-      renderOrders(ordersData);
+      if (currentUserRole === "admin") {
+        const sorted = sortOrders([...ordersData], document.getElementById("sort-select").value);
+        renderOrdersAdmin(sorted);
+      } else {
+        renderOrdersUser(ordersData);
+      }
     });
 }
 
-// ✅ 渲染訂單列表
-function renderOrders(data) {
+// ✅ 排序工具
+function sortOrders(data, sortBy) {
+  return data.sort((a, b) => {
+    if (sortBy === "createdAt" || sortBy === "pickupDate") {
+      return new Date(a[sortBy]) - new Date(b[sortBy]);
+    }
+    if (sortBy === "totalAmount") {
+      return b.totalAmount - a.totalAmount;
+    }
+    if (sortBy === "status") {
+      return a.status.localeCompare(b.status);
+    }
+    return 0;
+  });
+}
+
+// ✅ 一般會員：單一訂單區塊
+function renderOrdersUser(data) {
   const container = document.getElementById("order-list");
   container.innerHTML = "";
 
@@ -145,36 +152,65 @@ function renderOrders(data) {
   }
 
   data.forEach(order => {
-    const div = document.createElement("div");
-
-    let statusControls = "";
-    if (currentUserRole === "admin") {
-      statusControls = `
-        <div style="margin-top: 0.5rem;">
-          <label><strong>更改狀態：</strong></label>
-          <select onchange="updateOrderStatus(${order.id}, this.value)">
-            <option value="pending" ${order.status === "pending" ? "selected" : ""}>等待接收</option>
-            <option value="received" ${order.status === "received" ? "selected" : ""}>等待付款</option>
-            <option value="paid" ${order.status === "paid" ? "selected" : ""}>進行中</option>
-          </select>
-        </div>
-      `;
-    }
-
-    div.innerHTML = `
-      <div class="order-item">
-        <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
-        <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
-        <p><strong>領取日期：</strong>${order.pickupDate ? new Date(order.pickupDate).toLocaleDateString("zh-TW") : "未指定"}</p>
-        <p><strong>總金額：</strong>$${order.totalAmount.toFixed(0)}</p>
-        <ul>
-          ${order.items.map(i => `<li>${i.productName} x ${i.quantity}（$${i.price}）</li>`).join("")}
-        </ul>
-        ${statusControls}
-      </div>
-    `;
+    const div = createOrderCard(order);
     container.appendChild(div);
   });
+}
+
+// ✅ 商店主：依狀態分類三區塊
+function renderOrdersAdmin(data) {
+  const pendingContainer = document.getElementById("order-list-pending");
+  const receivedContainer = document.getElementById("order-list-received");
+  const paidContainer = document.getElementById("order-list-paid");
+
+  pendingContainer.innerHTML = "";
+  receivedContainer.innerHTML = "";
+  paidContainer.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    pendingContainer.innerHTML = "<p>尚無訂單紀錄</p>";
+    return;
+  }
+
+  data.forEach(order => {
+    const div = createOrderCard(order);
+    if (order.status === "pending") pendingContainer.appendChild(div);
+    else if (order.status === "received") receivedContainer.appendChild(div);
+    else if (order.status === "paid") paidContainer.appendChild(div);
+  });
+}
+
+// ✅ 建立單筆訂單 DOM
+function createOrderCard(order) {
+  const div = document.createElement("div");
+
+  let statusControls = "";
+  if (currentUserRole === "admin") {
+    statusControls = `
+      <div style="margin-top: 0.5rem;">
+        <label><strong>更改狀態：</strong></label>
+        <select onchange="updateOrderStatus(${order.id}, this.value)">
+          <option value="pending" ${order.status === "pending" ? "selected" : ""}>等待接收</option>
+          <option value="received" ${order.status === "received" ? "selected" : ""}>等待付款</option>
+          <option value="paid" ${order.status === "paid" ? "selected" : ""}>進行中</option>
+        </select>
+      </div>
+    `;
+  }
+
+  div.innerHTML = `
+    <div class="order-item">
+      <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
+      <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
+      <p><strong>領取日期：</strong>${order.pickupDate ? new Date(order.pickupDate).toLocaleDateString("zh-TW") : "未指定"}</p>
+      <p><strong>總金額：</strong>$${order.totalAmount.toFixed(0)}</p>
+      <ul>
+        ${order.items.map(i => `<li>${i.productName} x ${i.quantity}（$${i.price}）</li>`).join("")}
+      </ul>
+      ${statusControls}
+    </div>
+  `;
+  return div;
 }
 
 // ✅ 商店主更新訂單狀態

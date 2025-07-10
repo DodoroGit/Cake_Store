@@ -26,9 +26,11 @@
       </div>
     </nav>
   </header>
+
   <div class="member-container">
     <h1>🎂 會員專區</h1>
 
+    <!-- 會員資料區 -->
     <div id="profile" class="member-card">
       <h2>👤 會員資訊</h2>
       <div class="profile-row"><label for="name">名稱：</label><input id="name" /></div>
@@ -41,20 +43,40 @@
       </div>
     </div>
 
+    <!-- 訂單管理區 -->
     <div id="orders" class="member-card">
       <h2 id="order-title">🧾 我的訂單</h2>
-        <div id="sort-controls" style="margin-bottom: 1rem; display: none;">
-          <label for="sort-select"><strong>排序方式：</strong></label>
-          <select id="sort-select">
-            <option value="createdAt">按照建立時間</option>
-            <option value="pickupDate">按照取貨日期</option>
-            <option value="totalAmount">按照總金額</option>
-            <option value="status">按照訂單狀態</option>
-          </select>
-        </div>
+
+      <!-- admin 排序下拉選單（user 不顯示） -->
+      <div id="sort-controls" style="margin-bottom: 1rem; display: none;">
+        <label for="sort-select"><strong>排序方式：</strong></label>
+        <select id="sort-select">
+          <option value="createdAt">按照建立時間</option>
+          <option value="pickupDate">按照取貨日期</option>
+          <option value="totalAmount">按照總金額</option>
+          <option value="status">按照訂單狀態</option>
+        </select>
+      </div>
+
+      <!-- 一般使用者訂單顯示區 -->
       <div id="order-list"></div>
+
+      <!-- 商店主分三區塊顯示 -->
+      <div id="pending-orders" style="display: none;">
+        <h3>📮 等待接收</h3>
+        <div class="order-list" id="order-list-pending"></div>
+      </div>
+
+      <div id="received-orders" style="display: none;">
+        <h3>💰 等待付款</h3>
+        <div class="order-list" id="order-list-received"></div>
+      </div>
+
+      <div id="paid-orders" style="display: none;">
+        <h3>🛠 進行中</h3>
+        <div class="order-list" id="order-list-paid"></div>
+      </div>
     </div>
   </div>
-
 </body>
 </html>
