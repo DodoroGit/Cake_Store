@@ -43,6 +43,15 @@
 
     <div id="orders" class="member-card">
       <h2 id="order-title">🧾 我的訂單</h2>
+        <div id="sort-controls" style="margin-bottom: 1rem; display: none;">
+          <label for="sort-select"><strong>排序方式：</strong></label>
+          <select id="sort-select">
+            <option value="createdAt">按照建立時間</option>
+            <option value="pickupDate">按照取貨日期</option>
+            <option value="totalAmount">按照總金額</option>
+            <option value="status">按照訂單狀態</option>
+          </select>
+        </div>
       <div id="order-list"></div>
     </div>
   </div>

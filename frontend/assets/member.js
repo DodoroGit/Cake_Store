@@ -4,7 +4,8 @@ if (!token) {
   window.location.href = "login.html";
 }
 
-let currentUserRole = "user"; // 預設
+let currentUserRole = "user";
+let ordersData = [];
 
 function translateStatus(status) {
   if (status === "pending") return "訂單等待接收中";
@@ -17,7 +18,7 @@ function formatDate(raw) {
   return new Date(raw).toLocaleString("zh-TW", { hour12: false });
 }
 
-// ✅ 查詢會員資訊
+// ✅ 會員資料查詢
 fetch("/graphql", {
   method: "POST",
   headers: {
@@ -37,30 +38,32 @@ fetch("/graphql", {
     `
   })
 })
-.then(res => res.json())
-.then(res => {
-  if (!res.data || !res.data.meInfo) {
-    alert("登入已過期，請重新登入");
-    localStorage.removeItem("token");
-    window.location.href = "login.html";
-    return;
-  }
+  .then(res => res.json())
+  .then(res => {
+    if (!res.data || !res.data.meInfo) {
+      alert("登入已過期，請重新登入");
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+      return;
+    }
 
-  const info = res.data.meInfo;
-  currentUserRole = info.role === "admin" ? "admin" : "user";
-  document.getElementById("name").value = info.name || "";
-  document.getElementById("email").value = info.email;
-  document.getElementById("phone").value = info.phone;
-  document.getElementById("role").textContent = currentUserRole === "admin" ? "商店主" : "一般會員";
+    const info = res.data.meInfo;
+    currentUserRole = info.role === "admin" ? "admin" : "user";
 
-  if (currentUserRole === "admin") {
-    document.getElementById("order-title").textContent = "📋 訂單管理系統";
-  }
+    document.getElementById("name").value = info.name || "";
+    document.getElementById("email").value = info.email;
+    document.getElementById("phone").value = info.phone;
+    document.getElementById("role").textContent = currentUserRole === "admin" ? "商店主" : "一般會員";
 
-  fetchOrders(); // ✅ 查詢訂單資料（根據身份）
-});
+    if (currentUserRole === "admin") {
+      document.getElementById("order-title").textContent = "📋 訂單管理系統";
+      document.getElementById("sort-controls").style.display = "block";
+    }
 
-// ✅ 登出按鈕
+    fetchOrders();
+  });
+
+// ✅ 登出功能
 document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
@@ -70,9 +73,32 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "login.html";
     });
   }
+
+  const sortSelect = document.getElementById("sort-select");
+  if (sortSelect) {
+    sortSelect.addEventListener("change", () => {
+      const sortBy = sortSelect.value;
+      const sorted = [...ordersData];
+
+      sorted.sort((a, b) => {
+        if (sortBy === "createdAt" || sortBy === "pickupDate") {
+          return new Date(a[sortBy]) - new Date(b[sortBy]);
+        }
+        if (sortBy === "totalAmount") {
+          return b.totalAmount - a.totalAmount;
+        }
+        if (sortBy === "status") {
+          return a.status.localeCompare(b.status);
+        }
+        return 0;
+      });
+
+      renderOrders(sorted);
+    });
+  }
 });
 
-// ✅ 根據身分查詢 myOrders（一般會員）或 allOrders（商店主）
+// ✅ 查詢訂單資料
 function fetchOrders() {
   const queryName = currentUserRole === "admin" ? "allOrders" : "myOrders";
 
@@ -101,53 +127,57 @@ function fetchOrders() {
       `
     })
   })
-  .then(res => res.json())
-  .then(res => {
-    const orders = res.data[queryName];
-    const container = document.getElementById("order-list");
+    .then(res => res.json())
+    .then(res => {
+      ordersData = res.data[queryName] || [];
+      renderOrders(ordersData);
+    });
+}
 
-    if (!orders || orders.length === 0) {
-      container.innerHTML = "<p>尚無訂單紀錄</p>";
-      return;
-    }
+// ✅ 渲染訂單列表
+function renderOrders(data) {
+  const container = document.getElementById("order-list");
+  container.innerHTML = "";
 
-    container.innerHTML = ""; // 清空舊資料
+  if (!data || data.length === 0) {
+    container.innerHTML = "<p>尚無訂單紀錄</p>";
+    return;
+  }
 
-    orders.forEach(order => {
-      const div = document.createElement("div");
+  data.forEach(order => {
+    const div = document.createElement("div");
 
-      let statusControls = "";
-      if (currentUserRole === "admin") {
-        statusControls = `
-          <div style="margin-top: 0.5rem;">
-            <label><strong>更改狀態：</strong></label>
-            <select onchange="updateOrderStatus(${order.id}, this.value)">
-              <option value="pending" ${order.status === "pending" ? "selected" : ""}>等待接收</option>
-              <option value="received" ${order.status === "received" ? "selected" : ""}>等待付款</option>
-              <option value="paid" ${order.status === "paid" ? "selected" : ""}>進行中</option>
-            </select>
-          </div>
-        `;
-      }
-
-      div.innerHTML = `
-        <div class="order-item">
-          <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
-          <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
-          <p><strong>領取日期：</strong>${order.pickupDate ? new Date(order.pickupDate).toLocaleDateString("zh-TW") : "未指定"}</p>
-          <p><strong>總金額：</strong>$${order.totalAmount.toFixed(0)}</p>
-          <ul>
-            ${order.items.map(i => `<li>${i.productName} x ${i.quantity}（$${i.price}）</li>`).join("")}
-          </ul>
-          ${statusControls}
+    let statusControls = "";
+    if (currentUserRole === "admin") {
+      statusControls = `
+        <div style="margin-top: 0.5rem;">
+          <label><strong>更改狀態：</strong></label>
+          <select onchange="updateOrderStatus(${order.id}, this.value)">
+            <option value="pending" ${order.status === "pending" ? "selected" : ""}>等待接收</option>
+            <option value="received" ${order.status === "received" ? "selected" : ""}>等待付款</option>
+            <option value="paid" ${order.status === "paid" ? "selected" : ""}>進行中</option>
+          </select>
         </div>
       `;
-      container.appendChild(div);
-    });
+    }
+
+    div.innerHTML = `
+      <div class="order-item">
+        <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
+        <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
+        <p><strong>領取日期：</strong>${order.pickupDate ? new Date(order.pickupDate).toLocaleDateString("zh-TW") : "未指定"}</p>
+        <p><strong>總金額：</strong>$${order.totalAmount.toFixed(0)}</p>
+        <ul>
+          ${order.items.map(i => `<li>${i.productName} x ${i.quantity}（$${i.price}）</li>`).join("")}
+        </ul>
+        ${statusControls}
+      </div>
+    `;
+    container.appendChild(div);
   });
 }
 
-// ✅ 商店主更新訂單狀態（用 GraphQL mutation）
+// ✅ 商店主更新訂單狀態
 function updateOrderStatus(orderId, newStatus) {
   fetch("/graphql", {
     method: "POST",
@@ -163,13 +193,13 @@ function updateOrderStatus(orderId, newStatus) {
       `
     })
   })
-  .then(res => res.json())
-  .then(res => {
-    if (res.data && res.data.updateOrderStatus === "OK") {
-      alert("訂單狀態已更新");
-      location.reload();
-    } else {
-      alert("更新失敗：" + (res.errors?.[0]?.message || "未知錯誤"));
-    }
-  });
+    .then(res => res.json())
+    .then(res => {
+      if (res.data && res.data.updateOrderStatus === "OK") {
+        alert("訂單狀態已更新");
+        fetchOrders();
+      } else {
+        alert("更新失敗：" + (res.errors?.[0]?.message || "未知錯誤"));
+      }
+    });
 }
