@@ -183,3 +183,12 @@ footer {
   display: flex;
   gap: 0.5rem;
 }
+
+.hero-description {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  color: #7c5222;
+  line-height: 1.8;
+  white-space: pre-line;
+}
