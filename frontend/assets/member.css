@@ -87,3 +87,23 @@
   border: 1px solid #ddd;
   border-radius: 6px;
 }
+
+/* 三個訂單區塊橫向排列（admin 用） */
+.admin-order-columns {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.admin-order-columns > div {
+  flex: 1;
+  min-width: 280px;
+}
+
+.admin-order-columns h3 {
+  font-size: 1.2rem;
+  color: #a14a5a;
+  margin-bottom: 0.8rem;
+}

@@ -59,6 +59,7 @@ fetch("/graphql", {
       document.getElementById("order-title").textContent = "📋 訂單管理系統";
       document.getElementById("sort-controls").style.display = "block";
 
+      document.getElementById("admin-order-section").style.display = "flex";
       // ✅ 新增這三行讓三區塊顯示出來
       document.getElementById("pending-orders").style.display = "block";
       document.getElementById("received-orders").style.display = "block";

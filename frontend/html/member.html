@@ -61,21 +61,24 @@
       <!-- 一般使用者訂單顯示區 -->
       <div id="order-list"></div>
 
-      <!-- 商店主分三區塊顯示 -->
-      <div id="pending-orders" style="display: none;">
-        <h3>📮 等待接收</h3>
-        <div class="order-list" id="order-list-pending"></div>
+      <!-- 商店主分三區塊（橫向排版） -->
+      <div id="admin-order-section" class="admin-order-columns" style="display: none;">
+        <div id="pending-orders">
+          <h3>📮 等待接收</h3>
+          <div class="order-list" id="order-list-pending"></div>
+        </div>
+
+        <div id="received-orders">
+          <h3>💰 等待付款</h3>
+          <div class="order-list" id="order-list-received"></div>
+        </div>
+
+        <div id="paid-orders">
+          <h3>🛠 進行中</h3>
+          <div class="order-list" id="order-list-paid"></div>
+        </div>
       </div>
 
-      <div id="received-orders" style="display: none;">
-        <h3>💰 等待付款</h3>
-        <div class="order-list" id="order-list-received"></div>
-      </div>
-
-      <div id="paid-orders" style="display: none;">
-        <h3>🛠 進行中</h3>
-        <div class="order-list" id="order-list-paid"></div>
-      </div>
     </div>
   </div>
 </body>
