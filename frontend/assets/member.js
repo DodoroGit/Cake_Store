@@ -60,9 +60,6 @@ fetch("/graphql", {
       document.getElementById("order-title").textContent = "📋 訂單管理系統";
       document.getElementById("sort-controls").style.display = "block";
       document.getElementById("admin-order-section").style.display = "flex";
-
-      // 額外綁定月份篩選 & 匯出按鈕
-      setupAdminControls();
     }
 
     fetchOrders();
@@ -130,7 +127,6 @@ function fetchOrders() {
     const monthInput = document.getElementById("month-select");
     const month = monthInput?.value;
 
-    let monthArg = "";
     if (month && month.length === 7) {  // 例如 "2025-07"
         monthArg = `(month: "${month}")`;
     }
