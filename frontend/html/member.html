@@ -49,13 +49,9 @@
 
       <!-- admin 排序下拉選單（user 不顯示） -->
       <div id="sort-controls" style="margin-bottom: 1rem; display: none;">
-        <label for="sort-select"><strong>排序方式：</strong></label>
-        <select id="sort-select">
-          <option value="createdAt">按照建立時間</option>
-          <option value="pickupDate">按照取貨日期</option>
-          <option value="totalAmount">按照總金額</option>
-          <option value="status">按照訂單狀態</option>
-        </select>
+        <label for="month-select"><strong>月份：</strong></label>
+        <input type="month" id="month-select" />
+        <button id="export-btn">匯出當月訂單 Excel</button>
       </div>
 
       <!-- 一般使用者訂單顯示區 -->

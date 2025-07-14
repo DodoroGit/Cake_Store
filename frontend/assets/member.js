@@ -60,6 +60,9 @@ fetch("/graphql", {
       document.getElementById("order-title").textContent = "📋 訂單管理系統";
       document.getElementById("sort-controls").style.display = "block";
       document.getElementById("admin-order-section").style.display = "flex";
+
+      // 額外綁定月份篩選 & 匯出按鈕
+      setupAdminControls();
     }
 
     fetchOrders();
@@ -86,8 +89,49 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+function setupAdminControls() {
+  // 動態加上月份選單與匯出按鈕
+  const controls = document.getElementById("sort-controls");
+
+  const monthLabel = document.createElement("label");
+  monthLabel.innerHTML = "<strong>月份：</strong>";
+
+  const monthInput = document.createElement("input");
+  monthInput.type = "month";
+  monthInput.id = "month-select";
+
+  const exportBtn = document.createElement("button");
+  exportBtn.id = "export-btn";
+  exportBtn.textContent = "匯出當月訂單 Excel";
+
+  controls.appendChild(monthLabel);
+  controls.appendChild(monthInput);
+  controls.appendChild(exportBtn);
+
+  monthInput.addEventListener("change", () => {
+    fetchOrders();
+  });
+
+  exportBtn.addEventListener("click", () => {
+    const month = document.getElementById("month-select").value;
+    if (!month) {
+      alert("請先選擇月份");
+      return;
+    }
+    window.open(`/admin/exportOrders?month=${month}`, "_blank");
+  });
+}
+
 function fetchOrders() {
   const queryName = currentUserRole === "admin" ? "allOrders" : "myOrders";
+
+  let monthArg = "";
+  if (currentUserRole === "admin") {
+    const month = document.getElementById("month-select")?.value;
+    if (month) {
+      monthArg = `(month: "${month}")`;
+    }
+  }
 
   fetch("/graphql", {
     method: "POST",
@@ -98,7 +142,7 @@ function fetchOrders() {
     body: JSON.stringify({
       query: `
         query {
-          ${queryName} {
+          ${queryName}${monthArg} {
             id
             createdAt
             status
@@ -223,7 +267,6 @@ function createOrderCard(order) {
   `;
   return div;
 }
-
 
 function updateOrderStatus(orderId, newStatus) {
   fetch("/graphql", {
