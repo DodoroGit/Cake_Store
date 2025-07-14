@@ -202,7 +202,7 @@ func init() {
 			`
 			args := []interface{}{}
 			if month, ok := p.Args["month"].(string); ok && month != "" {
-				baseQuery += " WHERE TO_CHAR(created_at, 'YYYY-MM') = $1"
+				baseQuery += " WHERE TO_CHAR(o.created_at, 'YYYY-MM') = $1"
 				args = append(args, month)
 			}
 			baseQuery += " ORDER BY created_at DESC"

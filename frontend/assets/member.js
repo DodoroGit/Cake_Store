@@ -127,9 +127,12 @@ function fetchOrders() {
 
   let monthArg = "";
   if (currentUserRole === "admin") {
-    const month = document.getElementById("month-select")?.value;
-    if (month) {
-      monthArg = `(month: "${month}")`;
+    const monthInput = document.getElementById("month-select");
+    const month = monthInput?.value;
+
+    let monthArg = "";
+    if (month && month.length === 7) {  // 例如 "2025-07"
+        monthArg = `(month: "${month}")`;
     }
   }
 
