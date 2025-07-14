@@ -180,6 +180,9 @@ func init() {
 	})
 	QueryType.AddFieldConfig("allOrders", &graphql.Field{
 		Type: graphql.NewList(OrderType),
+		Args: graphql.FieldConfigArgument{
+			"month": &graphql.ArgumentConfig{Type: graphql.String}, // 新增月份參數
+		},
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			userID, ok := GetUserIDFromParams(p)
 			if !ok {
@@ -192,12 +195,18 @@ func init() {
 				return nil, errors.New("沒有權限")
 			}
 
-			rows, err := database.DB.Query(`
-      SELECT o.id, o.created_at, o.status, o.pickup_date, o.order_number, o.pickup_method, o.address, o.pickup_time, u.name
-      FROM orders o
-      JOIN users u ON o.user_id = u.id
-      ORDER BY o.created_at DESC
-    `)
+			baseQuery := `
+				SELECT id, created_at, status, pickup_date
+				FROM orders
+			`
+			args := []interface{}{}
+			if month, ok := p.Args["month"].(string); ok && month != "" {
+				baseQuery += " WHERE TO_CHAR(created_at, 'YYYY-MM') = $1"
+				args = append(args, month)
+			}
+			baseQuery += " ORDER BY created_at DESC"
+
+			rows, err := database.DB.Query(baseQuery, args...)
 			if err != nil {
 				return nil, err
 			}
