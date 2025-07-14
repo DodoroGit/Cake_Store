@@ -196,8 +196,9 @@ func init() {
 			}
 
 			baseQuery := `
-				SELECT id, created_at, status, pickup_date
-				FROM orders
+				SELECT o.id, o.created_at, o.status, o.pickup_date, o.order_number, o.pickup_method, o.address, o.pickup_time, u.name
+				FROM orders o
+				JOIN users u ON o.user_id = u.id
 			`
 			args := []interface{}{}
 			if month, ok := p.Args["month"].(string); ok && month != "" {
@@ -225,11 +226,11 @@ func init() {
 				}
 
 				itemRows, _ := database.DB.Query(`
-        SELECT p.name, oi.quantity, oi.price
-        FROM order_items oi
-        JOIN products p ON p.id = oi.product_id
-        WHERE oi.order_id=$1
-      `, id)
+				SELECT p.name, oi.quantity, oi.price
+				FROM order_items oi
+				JOIN products p ON p.id = oi.product_id
+				WHERE oi.order_id=$1
+			`, id)
 
 				var items []map[string]interface{}
 				var total float64
