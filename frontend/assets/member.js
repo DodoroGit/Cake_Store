@@ -84,40 +84,27 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  const monthSelect = document.getElementById("month-select");
+  if (monthSelect) {
+    monthSelect.addEventListener("change", () => {
+      fetchOrders();
+    });
+  }
+
+  const exportBtn = document.getElementById("export-btn");
+  if (exportBtn) {
+    exportBtn.addEventListener("click", () => {
+      const month = document.getElementById("month-select").value;
+      if (!month) {
+        alert("請先選擇月份");
+        return;
+      }
+      window.open(`/admin/exportOrders?month=${month}`, "_blank");
+    });
+  }
 });
 
-function setupAdminControls() {
-  // 動態加上月份選單與匯出按鈕
-  const controls = document.getElementById("sort-controls");
-
-  const monthLabel = document.createElement("label");
-  monthLabel.innerHTML = "<strong>月份：</strong>";
-
-  const monthInput = document.createElement("input");
-  monthInput.type = "month";
-  monthInput.id = "month-select";
-
-  const exportBtn = document.createElement("button");
-  exportBtn.id = "export-btn";
-  exportBtn.textContent = "匯出當月訂單 Excel";
-
-  controls.appendChild(monthLabel);
-  controls.appendChild(monthInput);
-  controls.appendChild(exportBtn);
-
-  monthInput.addEventListener("change", () => {
-    fetchOrders();
-  });
-
-  exportBtn.addEventListener("click", () => {
-    const month = document.getElementById("month-select").value;
-    if (!month) {
-      alert("請先選擇月份");
-      return;
-    }
-    window.open(`/admin/exportOrders?month=${month}`, "_blank");
-  });
-}
 
 function fetchOrders() {
   const queryName = currentUserRole === "admin" ? "allOrders" : "myOrders";
@@ -166,13 +153,13 @@ function fetchOrders() {
     .then(res => {
       ordersData = res.data[queryName] || [];
       if (currentUserRole === "admin") {
-        const sorted = sortOrders([...ordersData], document.getElementById("sort-select").value);
-        renderOrdersAdmin(sorted);
+        renderOrdersAdmin(ordersData);
       } else {
         renderOrdersUser(ordersData);
       }
     });
 }
+
 
 function sortOrders(data, sortBy) {
   return data.sort((a, b) => {
