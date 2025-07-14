@@ -206,6 +206,7 @@ function createOrderCard(order) {
   div.innerHTML = `
     <div class="order-item">
       <p><strong>訂單編號：</strong>${order.orderNumber}</p>
+      ${order.name ? `<p><strong>訂貨人：</strong>${order.name}</p>` : ""}
       <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
       <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
       <p><strong>領取日期：</strong>${order.pickupDate ? new Date(order.pickupDate).toLocaleDateString("zh-TW") : "未指定"}</p>
@@ -221,6 +222,7 @@ function createOrderCard(order) {
   `;
   return div;
 }
+
 
 function updateOrderStatus(orderId, newStatus) {
   fetch("/graphql", {
