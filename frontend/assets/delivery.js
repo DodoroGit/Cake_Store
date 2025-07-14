@@ -89,8 +89,12 @@ function loadProducts() {
 
 // ✅ 加入購物車功能
 function addToCart(id, name, price) {
+  let quantity = 1;  // 預設數量是1
+
   const qtyInput = document.getElementById(`qty-${id}`);
-  const quantity = parseInt(qtyInput.value) || 1;
+  if (qtyInput) {
+    quantity = parseInt(qtyInput.value) || 1;  // 如果有輸入框就取數量
+  }
 
   const cart = JSON.parse(localStorage.getItem("cart") || "[]");
   const existing = cart.find(i => i.productID === id);
