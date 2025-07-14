@@ -31,23 +31,28 @@
   <div class="cart-container">
     <h1>🛒 我的購物車</h1>
 
-    <div id="cart-items"></div>
+    <div class="form-group">
+      <label for="pickup-date">取貨日期：</label>
+      <input type="date" id="pickup-date" />
+    </div>
 
-    <label for="pickup-date">取貨日期：</label>
-    <input type="date" id="pickup-date" />
+    <div class="form-group">
+      <label for="pickup-method">取貨方式：</label>
+      <select id="pickup-method" onchange="togglePickupOptions()">
+        <option value="現場取貨">現場取貨</option>
+        <option value="宅配寄送">宅配寄送</option>
+      </select>
+    </div>
 
-    <label for="pickup-method">取貨方式：</label>
-    <select id="pickup-method" onchange="toggleAddress()">
-      <option value="現場取貨">現場取貨</option>
-      <option value="宅配寄送">宅配寄送</option>
-    </select>
+    <div class="form-group" id="time-group">
+      <label for="pickup-time">取貨時間：</label>
+      <select id="pickup-time"></select>
+    </div>
 
-    <label for="pickup-time">取貨時間：</label>
-    <input type="time" id="pickup-time" min="15:00" max="23:59" />
-
-    <label for="address">地址：</label>
-    <input type="text" id="address" placeholder="請輸入地址" />
-
+    <div class="form-group">
+      <label for="address">地址：</label>
+      <input type="text" id="address" placeholder="請輸入地址" />
+    </div>
 
     <p id="total">總金額：$0</p>
 

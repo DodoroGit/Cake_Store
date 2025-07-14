@@ -105,19 +105,36 @@ function submitOrder() {
     });
 }
 
-function toggleAddress() {
+function togglePickupOptions() {
     const method = document.getElementById("pickup-method").value;
+    const timeGroup = document.getElementById("time-group");
+    const timeSelect = document.getElementById("pickup-time");
     const addressInput = document.getElementById("address");
-    if (method === "現場取貨") {
-        addressInput.value = "新竹市東區明湖路233號";
-        addressInput.disabled = true;
-    } else {
+
+    if (method === "宅配寄送") {
+        timeGroup.style.display = "none";  // 隱藏時間
         addressInput.value = "";
         addressInput.disabled = false;
+    } else {
+        timeGroup.style.display = "block"; // 顯示時間
+
+        // 重置時間選單為 15:00 ~ 24:00，整點
+        timeSelect.innerHTML = "";
+        for (let hour = 15; hour <= 23; hour++) {
+            const option = document.createElement("option");
+            option.value = `${hour}:00`;
+            option.textContent = `${hour}:00`;
+            timeSelect.appendChild(option);
+        }
+
+        // 固定地址
+        addressInput.value = "新竹市東區明湖路233號";
+        addressInput.disabled = true;
     }
 }
 
+
 document.addEventListener("DOMContentLoaded", () => {
-    toggleAddress();  // 預設選擇「現場取貨」時，自動帶入地址
+    togglePickupOptions();
     renderCart();
 });
