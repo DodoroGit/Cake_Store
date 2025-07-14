@@ -29,7 +29,7 @@ func main() {
 
 	// 註冊 GraphQL endpoint（此時 context 已含 JWT）
 	r.Any("/graphql", routes.GraphqlHandler())
-	r.GET("/admin/exportOrders", routes.ExportOrdersHandler)
+	routes.RegisterAdminRoutes(r)
 
 	// 啟動 server
 	r.Run("0.0.0.0:8080")
