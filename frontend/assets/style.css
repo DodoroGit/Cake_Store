@@ -19,7 +19,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 1.2rem 2rem;
-  background-color: #ffefb0;
+  background: url('../assets/images/background.jpg') center/cover no-repeat;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   position: relative;
 }
