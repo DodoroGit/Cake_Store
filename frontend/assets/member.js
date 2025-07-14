@@ -108,6 +108,7 @@ function fetchOrders() {
             pickupMethod
             address
             pickupTime
+            name
             items {
               productName
               quantity
