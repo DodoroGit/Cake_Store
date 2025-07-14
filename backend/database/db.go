@@ -58,7 +58,11 @@ func createTables() {
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			status TEXT DEFAULT 'pending',
 			received BOOLEAN DEFAULT false,
-			pickup_date DATE 
+			pickup_date DATE,
+			pickup_method TEXT,
+			address TEXT,
+			pickup_time TEXT,
+			order_number TEXT UNIQUE
 		);`,
 
 		`CREATE TABLE IF NOT EXISTS order_items (

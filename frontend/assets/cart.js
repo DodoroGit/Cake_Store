@@ -52,9 +52,13 @@ function clearCart() {
 }
 
 function submitOrder() {
-    const pickupDate = document.getElementById("pickup-date")?.value;
-    if (!pickupDate) {
-        alert("請選擇取貨日期！");
+    const pickupDate = document.getElementById("pickup-date").value;
+    const pickupMethod = document.getElementById("pickup-method").value;
+    const pickupTime = document.getElementById("pickup-time").value;
+    const address = document.getElementById("address").value;
+
+    if (!pickupDate || !pickupTime) {
+        alert("請填寫取貨日期與時間！");
         return;
     }
 
@@ -76,20 +80,23 @@ function submitOrder() {
         },
         body: JSON.stringify({
             query: `
-                mutation($items: [OrderItemInput!]!, $pickupDate: String!) {
-                    createOrder(items: $items, pickupDate: $pickupDate)
+                mutation($items: [OrderItemInput!]!, $pickupDate: String!, $pickupMethod: String!, $pickupTime: String!, $address: String!) {
+                    createOrder(items: $items, pickupDate: $pickupDate, pickupMethod: $pickupMethod, pickupTime: $pickupTime, address: $address)
                 }
             `,
             variables: {
                 items: orderItems,
-                pickupDate: pickupDate
+                pickupDate: pickupDate,
+                pickupMethod: pickupMethod,
+                pickupTime: pickupTime,
+                address: address
             }
         })
     })
     .then(res => res.json())
     .then(res => {
         if (res.data?.createOrder) {
-            alert("✅ 訂單送出成功！");
+            alert(res.data.createOrder); // 顯示後端傳來的訂單編號
             localStorage.removeItem("cart");
             window.location.href = "member.html";
         } else {
@@ -98,4 +105,19 @@ function submitOrder() {
     });
 }
 
-renderCart();
+function toggleAddress() {
+    const method = document.getElementById("pickup-method").value;
+    const addressInput = document.getElementById("address");
+    if (method === "現場取貨") {
+        addressInput.value = "新竹市東區明湖路233號";
+        addressInput.disabled = true;
+    } else {
+        addressInput.value = "";
+        addressInput.disabled = false;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    toggleAddress();  // 預設選擇「現場取貨」時，自動帶入地址
+    renderCart();
+});

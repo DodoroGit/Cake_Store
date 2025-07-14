@@ -95,7 +95,10 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 						},
 					})),
 				},
-				"pickupDate": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)}, // ✅ 新增
+				"pickupDate":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				"pickupMethod": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				"pickupTime":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				"address":      &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				userID, ok := GetUserIDFromParams(p)
@@ -103,34 +106,48 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 					return nil, errors.New("未登入")
 				}
 
-				// ✅ 解析取貨日期字串
 				pickupDateStr := p.Args["pickupDate"].(string)
-				pickupDate, err := time.Parse("2006-01-02", pickupDateStr)
-				if err != nil {
-					return nil, errors.New("取貨日期格式錯誤")
+				pickupMethod := p.Args["pickupMethod"].(string)
+				pickupTime := p.Args["pickupTime"].(string)
+				address := p.Args["address"].(string)
+				items := p.Args["items"].([]interface{})
+
+				// 驗證時間
+				if pickupMethod == "現場取貨" {
+					if address == "" {
+						address = "新竹市東區明湖路233號"
+					}
+					t, err := time.Parse("15:04", pickupTime)
+					if err != nil || t.Hour() < 15 || t.Hour() > 23 {
+						return nil, errors.New("現場取貨時間需為 15:00~24:00")
+					}
 				}
 
-				items := p.Args["items"].([]interface{})
+				// 產生訂單編號
+				orderNumber := fmt.Sprintf("ODR-%d-%s", userID, time.Now().Format("20060102150405"))
 
 				tx, err := database.DB.Begin()
 				if err != nil {
 					return nil, err
 				}
 
+				// 寫入 orders 表
 				var orderID int
-				err = tx.QueryRow(
-					`INSERT INTO orders (user_id, pickup_date) VALUES ($1, $2) RETURNING id`,
-					userID, pickupDate, // ✅ 寫入 pickup_date
+				err = tx.QueryRow(`
+			INSERT INTO orders (user_id, pickup_date, pickup_method, address, pickup_time, order_number) 
+			VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+					userID, pickupDateStr, pickupMethod, address, pickupTime, orderNumber,
 				).Scan(&orderID)
 				if err != nil {
 					tx.Rollback()
 					return nil, err
 				}
 
+				// 寫入 order_items
 				for _, i := range items {
 					item := i.(map[string]interface{})
-					productID := int(item["productID"].(int))
-					quantity := int(item["quantity"].(int))
+					productID := item["productID"].(int)
+					quantity := item["quantity"].(int)
 
 					var price float64
 					err := tx.QueryRow(`SELECT price FROM products WHERE id=$1`, productID).Scan(&price)
@@ -139,8 +156,9 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 						return nil, errors.New("商品不存在")
 					}
 
-					_, err = tx.Exec(
-						`INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)`,
+					_, err = tx.Exec(`
+				INSERT INTO order_items (order_id, product_id, quantity, price) 
+				VALUES ($1, $2, $3, $4)`,
 						orderID, productID, quantity, price,
 					)
 					if err != nil {
@@ -150,7 +168,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				}
 
 				tx.Commit()
-				return "訂單建立成功", nil
+				return fmt.Sprintf("訂單建立成功，訂單編號：%s", orderNumber), nil
 			},
 		},
 
