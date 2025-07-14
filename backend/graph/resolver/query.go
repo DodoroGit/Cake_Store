@@ -178,7 +178,6 @@ func init() {
 			return result, nil
 		},
 	})
-
 	QueryType.AddFieldConfig("allOrders", &graphql.Field{
 		Type: graphql.NewList(OrderType),
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -194,10 +193,11 @@ func init() {
 			}
 
 			rows, err := database.DB.Query(`
-				SELECT id, created_at, status, pickup_date, order_number, pickup_method, address, pickup_time
-				FROM orders
-				ORDER BY created_at DESC
-			`)
+      SELECT o.id, o.created_at, o.status, o.pickup_date, o.order_number, o.pickup_method, o.address, o.pickup_time, u.name
+      FROM orders o
+      JOIN users u ON o.user_id = u.id
+      ORDER BY o.created_at DESC
+    `)
 			if err != nil {
 				return nil, err
 			}
@@ -207,20 +207,20 @@ func init() {
 
 			for rows.Next() {
 				var id int
-				var createdAt, status, orderNumber, pickupMethod, address, pickupTime string
+				var createdAt, status, orderNumber, pickupMethod, address, pickupTime, userName string
 				var pickupDate sql.NullString
 
-				err := rows.Scan(&id, &createdAt, &status, &pickupDate, &orderNumber, &pickupMethod, &address, &pickupTime)
+				err := rows.Scan(&id, &createdAt, &status, &pickupDate, &orderNumber, &pickupMethod, &address, &pickupTime, &userName)
 				if err != nil {
 					continue
 				}
 
 				itemRows, _ := database.DB.Query(`
-					SELECT p.name, oi.quantity, oi.price
-					FROM order_items oi
-					JOIN products p ON p.id = oi.product_id
-					WHERE oi.order_id=$1
-				`, id)
+        SELECT p.name, oi.quantity, oi.price
+        FROM order_items oi
+        JOIN products p ON p.id = oi.product_id
+        WHERE oi.order_id=$1
+      `, id)
 
 				var items []map[string]interface{}
 				var total float64
@@ -251,6 +251,7 @@ func init() {
 					"pickupTime":   pickupTime,
 					"totalAmount":  total,
 					"items":        items,
+					"name":         userName,
 				})
 			}
 
