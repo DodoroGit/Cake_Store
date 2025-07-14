@@ -11,6 +11,7 @@ function translateStatus(status) {
   if (status === "pending") return "訂單等待接收中";
   if (status === "received") return "已接收訂單等待付款";
   if (status === "paid") return "已付款訂單進行中";
+  if (status === "completed") return "訂單已完成";
   return status;
 }
 
@@ -18,7 +19,7 @@ function formatDate(raw) {
   return new Date(raw).toLocaleString("zh-TW", { hour12: false });
 }
 
-// ✅ 初始化會員資訊
+// 初始化會員資訊
 fetch("/graphql", {
   method: "POST",
   headers: {
@@ -58,18 +59,12 @@ fetch("/graphql", {
     if (currentUserRole === "admin") {
       document.getElementById("order-title").textContent = "📋 訂單管理系統";
       document.getElementById("sort-controls").style.display = "block";
-
       document.getElementById("admin-order-section").style.display = "flex";
-      // ✅ 新增這三行讓三區塊顯示出來
-      document.getElementById("pending-orders").style.display = "block";
-      document.getElementById("received-orders").style.display = "block";
-      document.getElementById("paid-orders").style.display = "block";
     }
 
     fetchOrders();
   });
 
-// ✅ 登出功能
 document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logout-btn");
   if (logoutBtn) {
@@ -109,6 +104,10 @@ function fetchOrders() {
             status
             pickupDate
             totalAmount
+            orderNumber
+            pickupMethod
+            address
+            pickupTime
             items {
               productName
               quantity
@@ -131,7 +130,6 @@ function fetchOrders() {
     });
 }
 
-// ✅ 排序工具
 function sortOrders(data, sortBy) {
   return data.sort((a, b) => {
     if (sortBy === "createdAt" || sortBy === "pickupDate") {
@@ -147,7 +145,6 @@ function sortOrders(data, sortBy) {
   });
 }
 
-// ✅ 一般會員：單一訂單區塊
 function renderOrdersUser(data) {
   const container = document.getElementById("order-list");
   container.innerHTML = "";
@@ -163,15 +160,16 @@ function renderOrdersUser(data) {
   });
 }
 
-// ✅ 商店主：依狀態分類三區塊
 function renderOrdersAdmin(data) {
   const pendingContainer = document.getElementById("order-list-pending");
   const receivedContainer = document.getElementById("order-list-received");
   const paidContainer = document.getElementById("order-list-paid");
+  const completedContainer = document.getElementById("order-list-completed");
 
   pendingContainer.innerHTML = "";
   receivedContainer.innerHTML = "";
   paidContainer.innerHTML = "";
+  completedContainer.innerHTML = "";
 
   if (!data || data.length === 0) {
     pendingContainer.innerHTML = "<p>尚無訂單紀錄</p>";
@@ -183,10 +181,10 @@ function renderOrdersAdmin(data) {
     if (order.status === "pending") pendingContainer.appendChild(div);
     else if (order.status === "received") receivedContainer.appendChild(div);
     else if (order.status === "paid") paidContainer.appendChild(div);
+    else if (order.status === "completed") completedContainer.appendChild(div);
   });
 }
 
-// ✅ 建立單筆訂單 DOM
 function createOrderCard(order) {
   const div = document.createElement("div");
 
@@ -199,6 +197,7 @@ function createOrderCard(order) {
           <option value="pending" ${order.status === "pending" ? "selected" : ""}>等待接收</option>
           <option value="received" ${order.status === "received" ? "selected" : ""}>等待付款</option>
           <option value="paid" ${order.status === "paid" ? "selected" : ""}>進行中</option>
+          <option value="completed" ${order.status === "completed" ? "selected" : ""}>已完成</option>
         </select>
       </div>
     `;
@@ -206,9 +205,13 @@ function createOrderCard(order) {
 
   div.innerHTML = `
     <div class="order-item">
+      <p><strong>訂單編號：</strong>${order.orderNumber}</p>
       <p><strong>訂單狀態：</strong>${translateStatus(order.status)}</p>
       <p><strong>建立時間：</strong>${formatDate(order.createdAt)}</p>
       <p><strong>領取日期：</strong>${order.pickupDate ? new Date(order.pickupDate).toLocaleDateString("zh-TW") : "未指定"}</p>
+      <p><strong>取貨方式：</strong>${order.pickupMethod}</p>
+      <p><strong>取貨地址：</strong>${order.address}</p>
+      <p><strong>取貨時間：</strong>${order.pickupTime}</p>
       <p><strong>總金額：</strong>$${order.totalAmount.toFixed(0)}</p>
       <ul>
         ${order.items.map(i => `<li>${i.productName} x ${i.quantity}（$${i.price}）</li>`).join("")}
@@ -219,7 +222,6 @@ function createOrderCard(order) {
   return div;
 }
 
-// ✅ 商店主更新訂單狀態
 function updateOrderStatus(orderId, newStatus) {
   fetch("/graphql", {
     method: "POST",

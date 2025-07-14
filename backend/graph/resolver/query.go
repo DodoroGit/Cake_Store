@@ -43,7 +43,7 @@ func init() {
 			}
 
 			rows, err := database.DB.Query(`
-				SELECT id, created_at, status, pickup_date
+				SELECT id, created_at, status, pickup_date, order_number, pickup_method, address, pickup_time
 				FROM orders
 				WHERE user_id=$1
 				ORDER BY created_at DESC
@@ -57,13 +57,14 @@ func init() {
 
 			for rows.Next() {
 				var id int
-				var createdAt, status string
+				var createdAt, status, orderNumber, pickupMethod, address, pickupTime string
 				var pickupDate sql.NullString
-				if err := rows.Scan(&id, &createdAt, &status, &pickupDate); err != nil {
+
+				err := rows.Scan(&id, &createdAt, &status, &pickupDate, &orderNumber, &pickupMethod, &address, &pickupTime)
+				if err != nil {
 					continue
 				}
 
-				// 查詢訂單的項目
 				itemRows, _ := database.DB.Query(`
 					SELECT p.name, oi.quantity, oi.price
 					FROM order_items oi
@@ -73,11 +74,13 @@ func init() {
 
 				var items []map[string]interface{}
 				var total float64
+
 				for itemRows.Next() {
 					var name string
 					var quantity int
 					var price float64
 					itemRows.Scan(&name, &quantity, &price)
+
 					items = append(items, map[string]interface{}{
 						"productName": name,
 						"quantity":    quantity,
@@ -88,12 +91,16 @@ func init() {
 				itemRows.Close()
 
 				result = append(result, map[string]interface{}{
-					"id":          id,
-					"createdAt":   createdAt,
-					"status":      status,
-					"items":       items,
-					"totalAmount": total,
-					"pickupDate":  pickupDate.String,
+					"id":           id,
+					"createdAt":    createdAt,
+					"status":       status,
+					"pickupDate":   pickupDate.String,
+					"orderNumber":  orderNumber,
+					"pickupMethod": pickupMethod,
+					"address":      address,
+					"pickupTime":   pickupTime,
+					"totalAmount":  total,
+					"items":        items,
 				})
 			}
 
@@ -180,7 +187,6 @@ func init() {
 				return nil, errors.New("未登入")
 			}
 
-			// 檢查身分
 			var role string
 			err := database.DB.QueryRow(`SELECT role FROM users WHERE id=$1`, userID).Scan(&role)
 			if err != nil || role != "admin" {
@@ -188,10 +194,10 @@ func init() {
 			}
 
 			rows, err := database.DB.Query(`
-			SELECT id, created_at, status, pickup_date
-			FROM orders
-			ORDER BY created_at DESC
-		`)
+				SELECT id, created_at, status, pickup_date, order_number, pickup_method, address, pickup_time
+				FROM orders
+				ORDER BY created_at DESC
+			`)
 			if err != nil {
 				return nil, err
 			}
@@ -201,26 +207,30 @@ func init() {
 
 			for rows.Next() {
 				var id int
-				var createdAt, status string
+				var createdAt, status, orderNumber, pickupMethod, address, pickupTime string
 				var pickupDate sql.NullString
-				if err := rows.Scan(&id, &createdAt, &status, &pickupDate); err != nil {
+
+				err := rows.Scan(&id, &createdAt, &status, &pickupDate, &orderNumber, &pickupMethod, &address, &pickupTime)
+				if err != nil {
 					continue
 				}
 
 				itemRows, _ := database.DB.Query(`
-				SELECT p.name, oi.quantity, oi.price
-				FROM order_items oi
-				JOIN products p ON p.id = oi.product_id
-				WHERE oi.order_id=$1
-			`, id)
+					SELECT p.name, oi.quantity, oi.price
+					FROM order_items oi
+					JOIN products p ON p.id = oi.product_id
+					WHERE oi.order_id=$1
+				`, id)
 
 				var items []map[string]interface{}
 				var total float64
+
 				for itemRows.Next() {
 					var name string
 					var quantity int
 					var price float64
 					itemRows.Scan(&name, &quantity, &price)
+
 					items = append(items, map[string]interface{}{
 						"productName": name,
 						"quantity":    quantity,
@@ -231,12 +241,16 @@ func init() {
 				itemRows.Close()
 
 				result = append(result, map[string]interface{}{
-					"id":          id,
-					"createdAt":   createdAt,
-					"status":      status,
-					"items":       items,
-					"totalAmount": total,
-					"pickupDate":  pickupDate.String,
+					"id":           id,
+					"createdAt":    createdAt,
+					"status":       status,
+					"pickupDate":   pickupDate.String,
+					"orderNumber":  orderNumber,
+					"pickupMethod": pickupMethod,
+					"address":      address,
+					"pickupTime":   pickupTime,
+					"totalAmount":  total,
+					"items":        items,
 				})
 			}
 
