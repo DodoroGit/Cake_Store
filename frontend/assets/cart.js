@@ -52,19 +52,24 @@ function clearCart() {
 }
 
 function submitOrder() {
-    const pickupDate = document.getElementById("pickup-date").value;
-    const pickupMethod = document.getElementById("pickup-method").value;
-    const pickupTime = document.getElementById("pickup-time").value;
+    const method = document.getElementById("pickup-method").value;
+    let pickupDate = document.getElementById("pickup-date").value;
+    let pickupTime = document.getElementById("pickup-time").value;
     const address = document.getElementById("address").value;
-
-    if (!pickupDate || !pickupTime) {
-        alert("請填寫取貨日期與時間！");
-        return;
-    }
 
     if (cart.length === 0) {
         alert("購物車是空的！");
         return;
+    }
+
+    if (method === "宅配寄送") {
+        pickupDate = "宅配流程";
+        pickupTime = "宅配流程";
+    } else {
+        if (!pickupDate || !pickupTime) {
+            alert("請填寫取貨日期與時間！");
+            return;
+        }
     }
 
     const orderItems = cart.map(item => ({
@@ -87,7 +92,7 @@ function submitOrder() {
             variables: {
                 items: orderItems,
                 pickupDate: pickupDate,
-                pickupMethod: pickupMethod,
+                pickupMethod: method,
                 pickupTime: pickupTime,
                 address: address
             }
@@ -96,7 +101,7 @@ function submitOrder() {
     .then(res => res.json())
     .then(res => {
         if (res.data?.createOrder) {
-            alert(res.data.createOrder); // 顯示後端傳來的訂單編號
+            alert(res.data.createOrder);
             localStorage.removeItem("cart");
             window.location.href = "member.html";
         } else {
@@ -109,14 +114,20 @@ function togglePickupOptions() {
     const method = document.getElementById("pickup-method").value;
     const timeGroup = document.getElementById("time-group");
     const timeSelect = document.getElementById("pickup-time");
+    const dateInput = document.getElementById("pickup-date");
     const addressInput = document.getElementById("address");
+    const dateGroup = document.getElementById("date-group");
 
     if (method === "宅配寄送") {
         timeGroup.style.display = "none";  // 隱藏時間
+        dateGroup.style.display = "none";
+        dateInput.style.display = "none";   // 隱藏日期
         addressInput.value = "";
         addressInput.disabled = false;
     } else {
         timeGroup.style.display = "block"; // 顯示時間
+        dateGroup.style.display = "block";
+        dateInput.style.display = "block";  // 顯示日期
 
         // 重置時間選單為 15:00 ~ 24:00，整點
         timeSelect.innerHTML = "";
@@ -132,6 +143,7 @@ function togglePickupOptions() {
         addressInput.disabled = true;
     }
 }
+
 
 
 document.addEventListener("DOMContentLoaded", () => {
