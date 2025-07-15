@@ -156,8 +156,8 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				// 寫入 order_items
 				for _, i := range items {
 					item := i.(map[string]interface{})
-					productID := item["productID"].(int)
-					quantity := item["quantity"].(int)
+					productID := int(item["productID"].(float64))
+					quantity := int(item["quantity"].(float64))
 
 					var price float64
 					err := tx.QueryRow(`SELECT price FROM products WHERE id=$1`, productID).Scan(&price)
