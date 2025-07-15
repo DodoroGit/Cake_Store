@@ -63,8 +63,8 @@ function submitOrder() {
     }
 
     if (method === "宅配寄送") {
-        pickupDate = "宅配流程";
-        pickupTime = "宅配流程";
+        pickupDate = "";
+        pickupTime = "";
     } else {
         if (!pickupDate || !pickupTime) {
             alert("請填寫取貨日期與時間！");
