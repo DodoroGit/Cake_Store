@@ -56,6 +56,7 @@ function submitOrder() {
     let pickupDate = document.getElementById("pickup-date").value;
     let pickupTime = document.getElementById("pickup-time").value;
     const address = document.getElementById("address").value;
+    const paymentInfo = document.getElementById("payment-info").value;
 
     if (cart.length === 0) {
         alert("購物車是空的！");
@@ -85,16 +86,17 @@ function submitOrder() {
         },
         body: JSON.stringify({
             query: `
-                mutation($items: [OrderItemInput!]!, $pickupDate: String!, $pickupMethod: String!, $pickupTime: String!, $address: String!) {
-                    createOrder(items: $items, pickupDate: $pickupDate, pickupMethod: $pickupMethod, pickupTime: $pickupTime, address: $address)
+                mutation($items: [OrderItemInput!]!, $pickupDate: String!, $pickupMethod: String!, $pickupTime: String!, $address: String!, $paymentInfo: String!) {
+                    createOrder(items: $items, pickupDate: $pickupDate, pickupMethod: $pickupMethod, pickupTime: $pickupTime, address: $address, paymentInfo: $paymentInfo)
                 }
             `,
             variables: {
                 items: orderItems,
-                pickupDate: pickupDate,
+                pickupDate,
                 pickupMethod: method,
-                pickupTime: pickupTime,
-                address: address
+                pickupTime,
+                address,
+                paymentInfo
             }
         })
     })

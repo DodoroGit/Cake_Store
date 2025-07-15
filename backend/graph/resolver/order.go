@@ -25,5 +25,6 @@ var OrderType = graphql.NewObject(graphql.ObjectConfig{
 		"address":      &graphql.Field{Type: graphql.String},
 		"pickupTime":   &graphql.Field{Type: graphql.String},
 		"name":         &graphql.Field{Type: graphql.String},
+		"paymentInfo":  &graphql.Field{Type: graphql.String},
 	},
 })

@@ -61,6 +61,7 @@ func createTables() {
 			pickup_date DATE,
 			pickup_method TEXT,
 			address TEXT,
+			payment_info TEXT,
 			pickup_time TEXT,
 			order_number TEXT UNIQUE
 		);`,

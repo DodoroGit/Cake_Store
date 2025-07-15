@@ -251,6 +251,13 @@ function createOrderCard(order) {
       ${statusControls}
     </div>
   `;
+
+  if (order.status === "received" && currentUserRole === "user") {
+    div.innerHTML += `
+      <button onclick="alert('匯款資訊\\n\\n戶名：羅伊伶\\n銀行：中國信託\\n代號：822\\n帳號：90156446241')">查看匯款資訊</button>
+    `;
+  }
+
   return div;
 }
 

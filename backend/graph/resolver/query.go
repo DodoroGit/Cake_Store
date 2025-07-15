@@ -43,7 +43,7 @@ func init() {
 			}
 
 			rows, err := database.DB.Query(`
-				SELECT id, created_at, status, pickup_date, order_number, pickup_method, address, pickup_time
+				SELECT id, created_at, status, pickup_date, order_number, pickup_method, address, pickup_time, payment_info
 				FROM orders
 				WHERE user_id=$1
 				ORDER BY created_at DESC
@@ -59,8 +59,9 @@ func init() {
 				var id int
 				var createdAt, status, orderNumber, pickupMethod, address, pickupTime string
 				var pickupDate sql.NullString
+				var paymentInfo sql.NullString
 
-				err := rows.Scan(&id, &createdAt, &status, &pickupDate, &orderNumber, &pickupMethod, &address, &pickupTime)
+				err := rows.Scan(&id, &createdAt, &status, &pickupDate, &orderNumber, &pickupMethod, &address, &pickupTime, &paymentInfo)
 				if err != nil {
 					continue
 				}
@@ -101,6 +102,7 @@ func init() {
 					"pickupTime":   pickupTime,
 					"totalAmount":  total,
 					"items":        items,
+					"paymentInfo":  paymentInfo.String,
 				})
 			}
 

@@ -99,6 +99,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				"pickupMethod": &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 				"pickupTime":   &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 				"address":      &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
+				"paymentInfo":  &graphql.ArgumentConfig{Type: graphql.NewNonNull(graphql.String)},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				userID, ok := GetUserIDFromParams(p)
@@ -110,6 +111,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				pickupMethod := p.Args["pickupMethod"].(string)
 				pickupTime := p.Args["pickupTime"].(string)
 				address := p.Args["address"].(string)
+				paymentInfo := p.Args["paymentInfo"].(string)
 				items := p.Args["items"].([]interface{})
 
 				// 驗證時間
@@ -134,10 +136,11 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				// 寫入 orders 表
 				var orderID int
 				err = tx.QueryRow(`
-					INSERT INTO orders (user_id, pickup_date, pickup_method, address, pickup_time, order_number)
-					VALUES ($1, NULLIF($2, ''), $3, $4, NULLIF($5, ''), $6)
-					`,
-					userID, pickupDateStr, pickupMethod, address, pickupTime, orderNumber,
+					INSERT INTO orders (user_id, pickup_date, pickup_method, address, pickup_time, order_number, payment_info)
+					VALUES ($1, NULLIF($2, ''), $3, $4, NULLIF($5, ''), $6, $7)
+					RETURNING id
+				`,
+					userID, pickupDateStr, pickupMethod, address, pickupTime, orderNumber, paymentInfo,
 				).Scan(&orderID)
 				if err != nil {
 					tx.Rollback()
