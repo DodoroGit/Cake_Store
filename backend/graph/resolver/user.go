@@ -135,13 +135,19 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 
 				// 寫入 orders 表
 				var orderID int
-				err = tx.QueryRow(`
+				query := `
 					INSERT INTO orders (user_id, pickup_date, pickup_method, address, pickup_time, order_number, payment_info)
-					VALUES ($1, NULLIF($2, ''), $3, $4, NULLIF($5, ''), $6, $7)
+					VALUES (
+						$1, 
+						CASE WHEN $2 != '' THEN TO_DATE($2, 'YYYY-MM-DD') ELSE NULL END, 
+						$3, $4, NULLIF($5, ''), $6, $7
+					)
 					RETURNING id
-				`,
+				`
+				err = tx.QueryRow(query,
 					userID, pickupDateStr, pickupMethod, address, pickupTime, orderNumber, paymentInfo,
 				).Scan(&orderID)
+
 				if err != nil {
 					tx.Rollback()
 					return nil, err
