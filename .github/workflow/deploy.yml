@@ -1,0 +1,34 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to EC2 and Run Docker Compose
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd /home/ec2-user/Cake_Store
+
+          echo "🔄 拉取最新代碼"
+          git pull origin main
+
+          echo "🧹 清理 Docker 無用資源"
+          docker compose down
+          docker system prune -af --volumes
+
+          echo "🚀 重新啟動服務"
+          docker compose up -d --build
+
+          echo "✅ 部署完成"
