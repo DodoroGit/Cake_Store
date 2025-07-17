@@ -54,7 +54,7 @@
 
 /* 保留原本內容，加上以下 RWD */
 
-@media (max-width: 1024px) {
+@media (max-width: 480px) {
   .contact-section img {
     width: 100%;
     height: auto;

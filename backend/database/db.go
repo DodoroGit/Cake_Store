@@ -88,3 +88,5 @@ func getEnv(key, fallback string) string {
 	}
 	return fallback
 }
+
+// try to add new word for git repository and make golang percentage large

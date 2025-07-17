@@ -111,7 +111,7 @@
 
 /* 保留原本內容，主要改下面這段 RWD */
 
-@media (max-width: 1024px) {
+@media (max-width: 480px) {
   .hero h1 {
     font-size: 1.8rem;
   }
