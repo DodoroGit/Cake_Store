@@ -33,6 +33,17 @@
   cursor: pointer;
 }
 
+#lemon-options button, #rose-options button {
+  margin: 0.3rem;
+  padding: 0.4rem 1rem;
+  background-color: #d2691e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
 /* RWD */
 @media (max-width: 1024px) {
   .product-grid {

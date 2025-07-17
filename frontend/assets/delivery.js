@@ -42,7 +42,6 @@ function addProduct() {
     });
 }
 
-// ✅ 載入商品列表
 function loadProducts() {
   const token = localStorage.getItem("token");
 
@@ -58,6 +57,7 @@ function loadProducts() {
           products {
             id
             name
+            description
             price
             imageUrl
           }
@@ -71,7 +71,61 @@ function loadProducts() {
       const container = document.getElementById("product-list");
       if (!container) return;
 
-      products.forEach(p => {
+      // 檸檬幕斯巴斯克蛋糕
+      const lemonCakes = products.filter(p => p.name.includes("檸檬幕斯巴斯克蛋糕"));
+      if (lemonCakes.length > 0) {
+        const lemonDiv = document.createElement("div");
+        lemonDiv.className = "product-card";
+
+        lemonDiv.innerHTML = `
+          <img src="${lemonCakes[0].imageUrl}" alt="檸檬幕斯巴斯克蛋糕" />
+          <h3>檸檬幕斯巴斯克蛋糕</h3>
+          <div id="lemon-options"></div>
+        `;
+
+        // 按照尺寸排序 4、6、8吋
+        const lemonSorted = lemonCakes.sort((a, b) => parseInt(a.description) - parseInt(b.description));
+
+        lemonSorted.forEach(c => {
+          const btn = document.createElement("button");
+          btn.textContent = `${c.description} - $${c.price}`;
+          btn.onclick = () => addToCart(c.id, `${c.name} ${c.description}`, c.price);
+          lemonDiv.querySelector("#lemon-options").appendChild(btn);
+        });
+
+        container.appendChild(lemonDiv);
+      }
+
+      // 玫瑰荔枝慕斯蛋糕
+      const roseCakes = products.filter(p => p.name.includes("玫瑰荔枝慕斯蛋糕"));
+      if (roseCakes.length > 0) {
+        const roseDiv = document.createElement("div");
+        roseDiv.className = "product-card";
+
+        roseDiv.innerHTML = `
+          <img src="${roseCakes[0].imageUrl}" alt="玫瑰荔枝慕斯蛋糕" />
+          <h3>玫瑰荔枝慕斯蛋糕</h3>
+          <div id="rose-options"></div>
+        `;
+
+        const roseSorted = roseCakes.sort((a, b) => parseInt(a.description) - parseInt(b.description));
+
+        roseSorted.forEach(c => {
+          const btn = document.createElement("button");
+          btn.textContent = `${c.description} - $${c.price}`;
+          btn.onclick = () => addToCart(c.id, `${c.name} ${c.description}`, c.price);
+          roseDiv.querySelector("#rose-options").appendChild(btn);
+        });
+
+        container.appendChild(roseDiv);
+      }
+
+      // 其他商品照原本邏輯
+      const otherCakes = products.filter(p => 
+        !p.name.includes("檸檬幕斯巴斯克蛋糕") && !p.name.includes("玫瑰荔枝慕斯蛋糕")
+      );
+
+      otherCakes.forEach(p => {
         const div = document.createElement("div");
         div.className = "product-card";
         div.innerHTML = `
@@ -86,6 +140,7 @@ function loadProducts() {
       });
     });
 }
+
 
 // ✅ 加入購物車功能
 function addToCart(id, name, price) {
