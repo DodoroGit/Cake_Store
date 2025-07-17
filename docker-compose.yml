@@ -2,19 +2,16 @@ version: '3.9'
 
 services:
   frontend:
-    image: nginx
-    container_name: cake_frontend
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx:/etc/nginx               # 掛載 nginx.conf
-      - /etc/letsencrypt:/etc/letsencrypt:ro  # SSL 憑證
-      - ./frontend:/usr/share/nginx/html # 靜態網站檔案
-    networks:
-      - cake_net
-    depends_on:
-      - backend
+  build: ./frontend
+  container_name: cake_frontend
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - ./frontend/nginx.conf:/etc/nginx/nginx.conf:ro
+    - /etc/letsencrypt:/etc/letsencrypt:ro
+  networks:
+    - cake_net
 
   backend:
     build: ./backend
