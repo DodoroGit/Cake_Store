@@ -193,9 +193,8 @@ footer {
   white-space: pre-line;
 }
 
-/* 保留原本內容，加上以下 RWD */
-
-@media (max-width: 768px) {
+/* 平板和手機共用 */
+@media (max-width: 1024px) {
   .nav-links {
     flex-direction: column;
     position: static;
@@ -213,5 +212,16 @@ footer {
     flex-direction: column;
     width: 100%;
     gap: 0.5rem;
+  }
+}
+
+/* 手機專用（更小字體、間距可再調整） */
+@media (max-width: 480px) {
+  .nav-links a {
+    font-size: 0.95rem;
+  }
+
+  .navbar {
+    padding: 1rem;
   }
 }
