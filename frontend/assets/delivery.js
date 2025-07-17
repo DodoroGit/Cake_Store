@@ -71,7 +71,7 @@ function loadProducts() {
       const container = document.getElementById("product-list");
       if (!container) return;
 
-      // 檸檬幕斯巴斯克蛋糕
+      // 處理 檸檬幕斯巴斯克
       const lemonCakes = products.filter(p => p.name.includes("檸檬幕斯巴斯克蛋糕"));
       if (lemonCakes.length > 0) {
         const lemonDiv = document.createElement("div");
@@ -80,23 +80,27 @@ function loadProducts() {
         lemonDiv.innerHTML = `
           <img src="${lemonCakes[0].imageUrl}" alt="檸檬幕斯巴斯克蛋糕" />
           <h3>檸檬幕斯巴斯克蛋糕</h3>
-          <div id="lemon-options"></div>
+          <select id="lemon-size"></select>
+          <input type="number" id="lemon-qty" min="1" value="1" style="width: 60px; margin: 5px;" />
+          <br/>
+          <button onclick="addLemonToCart()">加入購物車</button>
         `;
 
-        // 按照尺寸排序 4、6、8吋
-        const lemonSorted = lemonCakes.sort((a, b) => parseInt(a.description) - parseInt(b.description));
+        const select = lemonDiv.querySelector("#lemon-size");
 
-        lemonSorted.forEach(c => {
-          const btn = document.createElement("button");
-          btn.textContent = `${c.description} - $${c.price}`;
-          btn.onclick = () => addToCart(c.id, `${c.name} ${c.description}`, c.price);
-          lemonDiv.querySelector("#lemon-options").appendChild(btn);
+        lemonCakes.sort((a, b) => parseInt(a.description) - parseInt(b.description));
+
+        lemonCakes.forEach(c => {
+          const option = document.createElement("option");
+          option.value = `${c.id}|${c.price}|${c.description}`;
+          option.textContent = `${c.description} - $${c.price}`;
+          select.appendChild(option);
         });
 
         container.appendChild(lemonDiv);
       }
 
-      // 玫瑰荔枝慕斯蛋糕
+      // 處理 玫瑰荔枝慕斯
       const roseCakes = products.filter(p => p.name.includes("玫瑰荔枝慕斯蛋糕"));
       if (roseCakes.length > 0) {
         const roseDiv = document.createElement("div");
@@ -105,24 +109,30 @@ function loadProducts() {
         roseDiv.innerHTML = `
           <img src="${roseCakes[0].imageUrl}" alt="玫瑰荔枝慕斯蛋糕" />
           <h3>玫瑰荔枝慕斯蛋糕</h3>
-          <div id="rose-options"></div>
+          <select id="rose-size"></select>
+          <input type="number" id="rose-qty" min="1" value="1" style="width: 60px; margin: 5px;" />
+          <br/>
+          <button onclick="addRoseToCart()">加入購物車</button>
         `;
 
-        const roseSorted = roseCakes.sort((a, b) => parseInt(a.description) - parseInt(b.description));
+        const select = roseDiv.querySelector("#rose-size");
 
-        roseSorted.forEach(c => {
-          const btn = document.createElement("button");
-          btn.textContent = `${c.description} - $${c.price}`;
-          btn.onclick = () => addToCart(c.id, `${c.name} ${c.description}`, c.price);
-          roseDiv.querySelector("#rose-options").appendChild(btn);
+        roseCakes.sort((a, b) => parseInt(a.description) - parseInt(b.description));
+
+        roseCakes.forEach(c => {
+          const option = document.createElement("option");
+          option.value = `${c.id}|${c.price}|${c.description}`;
+          option.textContent = `${c.description} - $${c.price}`;
+          select.appendChild(option);
         });
 
         container.appendChild(roseDiv);
       }
 
-      // 其他商品照原本邏輯
-      const otherCakes = products.filter(p => 
-        !p.name.includes("檸檬幕斯巴斯克蛋糕") && !p.name.includes("玫瑰荔枝慕斯蛋糕")
+      // 其他商品
+      const otherCakes = products.filter(p =>
+        !p.name.includes("檸檬幕斯巴斯克蛋糕") &&
+        !p.name.includes("玫瑰荔枝慕斯蛋糕")
       );
 
       otherCakes.forEach(p => {
@@ -141,15 +151,29 @@ function loadProducts() {
     });
 }
 
+function addLemonToCart() {
+  const select = document.getElementById("lemon-size").value;
+  const qty = parseInt(document.getElementById("lemon-qty").value);
+
+  const [id, price, desc] = select.split("|");
+  const name = "檸檬幕斯巴斯克蛋糕 " + desc;
+
+  addToCart(parseInt(id), name, parseFloat(price), qty);
+}
+
+function addRoseToCart() {
+  const select = document.getElementById("rose-size").value;
+  const qty = parseInt(document.getElementById("rose-qty").value);
+
+  const [id, price, desc] = select.split("|");
+  const name = "玫瑰荔枝慕斯蛋糕 " + desc;
+
+  addToCart(parseInt(id), name, parseFloat(price), qty);
+}
 
 // ✅ 加入購物車功能
-function addToCart(id, name, price) {
-  let quantity = 1;  // 預設數量是1
-
-  const qtyInput = document.getElementById(`qty-${id}`);
-  if (qtyInput) {
-    quantity = parseInt(qtyInput.value) || 1;  // 如果有輸入框就取數量
-  }
+function addToCart(id, name, price, qty = 1) {
+  let quantity = qty;
 
   const cart = JSON.parse(localStorage.getItem("cart") || "[]");
   const existing = cart.find(i => i.productID === id);

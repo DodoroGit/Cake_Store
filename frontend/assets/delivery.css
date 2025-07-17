@@ -43,6 +43,12 @@
   cursor: pointer;
 }
 
+select {
+  margin-top: 5px;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
 
 /* RWD */
 @media (max-width: 1024px) {
