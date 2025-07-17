@@ -9,16 +9,17 @@
 
 ## 🔧 使用技術與架構
 
-| 技術 / 工具             | 說明                               |
-| ---------------------- | ---------------------------------- |
-| **後端 Golang + Gin**   | REST 路由 + GraphQL API            |
+| 技術 / 工具               | 說明                               |
+| ------------------------ | ---------------------------------- |
+| **後端 Golang + Gin**     | REST 路由 + GraphQL API            |
 | **GraphQL（手寫 Schema）** | 全站資料操作，**無 Codegen，自行撰寫 Resolver** |
-| **PostgreSQL**          | 資料儲存（會員 / 商品 / 訂單）    |
-| **JWT**                 | 會員登入驗證，支援多角色 (Admin / User) |
-| **Excelize**            | 訂單匯出 Excel（支援月份篩選）    |
-| **前端 HTML/CSS/JS**    | 原生語法撰寫，無框架                |
-| **Nginx**               | 前端靜態檔案服務                   |
+| **PostgreSQL**            | 資料儲存（會員 / 商品 / 訂單）    |
+| **JWT**                   | 會員登入驗證，支援多角色 (Admin / User) |
+| **Excelize**              | 訂單匯出 Excel（支援月份篩選）    |
+| **前端 HTML/CSS/JS**      | 原生語法撰寫，無框架                |
+| **Nginx**                 | 前端靜態檔案服務                   |
 | **Docker / Docker Compose** | 完整容器化，快速部署               |
+| **AWS EC2 + Route 53**    | 雲端主機部署，支援自有網域與 HTTPS |
 
 ---
 
