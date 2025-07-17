@@ -109,7 +109,8 @@
   50% { transform: scale(1.2); opacity: 0.6; }
 }
 
-/* 響應式微調（手機優化） */
+/* 保留原本內容，主要改下面這段 RWD */
+
 @media (max-width: 480px) {
   .hero h1 {
     font-size: 1.8rem;
@@ -118,6 +119,10 @@
     font-size: 1rem;
   }
   .product-card {
+    height: auto;
+  }
+  .product-card img {
+    width: 100%;
     height: auto;
   }
 }
