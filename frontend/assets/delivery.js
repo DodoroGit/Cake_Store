@@ -71,15 +71,14 @@ function loadProducts() {
       const container = document.getElementById("product-list");
       if (!container) return;
 
-      // 處理 檸檬幕斯巴斯克
-      const lemonCakes = products.filter(p => p.name.includes("檸檬幕斯巴斯克蛋糕"));
+      const lemonCakes = products.filter(p => p.name.includes("檸檬慕斯巴斯克蛋糕"));
       if (lemonCakes.length > 0) {
         const lemonDiv = document.createElement("div");
         lemonDiv.className = "product-card";
 
         lemonDiv.innerHTML = `
-          <img src="${lemonCakes[0].imageUrl}" alt="檸檬幕斯巴斯克蛋糕" />
-          <h3>檸檬幕斯巴斯克蛋糕</h3>
+          <img src="${lemonCakes[0].imageUrl}" alt="檸檬慕斯巴斯克蛋糕" />
+          <h3>檸檬慕斯巴斯克蛋糕</h3>
           <select id="lemon-size"></select>
           <input type="number" id="lemon-qty" min="1" value="1" style="width: 60px; margin: 5px;" />
           <br/>
@@ -131,7 +130,7 @@ function loadProducts() {
 
       // 其他商品
       const otherCakes = products.filter(p =>
-        !p.name.includes("檸檬幕斯巴斯克蛋糕") &&
+        !p.name.includes("檸檬慕斯巴斯克蛋糕") &&
         !p.name.includes("玫瑰荔枝慕斯蛋糕")
       );
 
@@ -156,7 +155,7 @@ function addLemonToCart() {
   const qty = parseInt(document.getElementById("lemon-qty").value);
 
   const [id, price, desc] = select.split("|");
-  const name = "檸檬幕斯巴斯克蛋糕 " + desc;
+  const name = "檸檬慕斯巴斯克蛋糕 " + desc;
 
   addToCart(parseInt(id), name, parseFloat(price), qty);
 }
