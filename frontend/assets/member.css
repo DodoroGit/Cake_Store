@@ -146,3 +146,54 @@
 #export-btn:hover {
   background-color: #ff5e87;
 }
+
+/* 通用按鈕樣式 */
+.member-btn-primary {
+  background-color: #ff88aa;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.member-btn-primary:hover {
+  background-color: #ff5e87;
+  transform: translateY(-2px);
+}
+
+/* 二級按鈕（例如登出） */
+.member-btn-secondary {
+  background-color: #fff5f8;
+  color: #d0708c;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #ff88aa;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.member-btn-secondary:hover {
+  background-color: #ffe5ec;
+  transform: translateY(-2px);
+}
+
+/* 查看匯款資訊按鈕 */
+.payment-info-btn {
+  background-color: #ffc0cb;
+  color: #5a3e1b;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.payment-info-btn:hover {
+  background-color: #ffb0bd;
+  transform: scale(1.05);
+}

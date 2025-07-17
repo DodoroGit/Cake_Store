@@ -254,7 +254,7 @@ function createOrderCard(order) {
 
   if (order.status === "received" && currentUserRole === "user") {
     div.innerHTML += `
-      <button onclick="alert('匯款資訊\\n\\n戶名：羅伊伶\\n銀行：中國信託\\n代號：822\\n帳號：90156446241')">查看匯款資訊</button>
+      <button class="payment-info-btn" onclick="alert('匯款資訊\\n\\n戶名：羅伊伶\\n銀行：中國信託\\n代號：822\\n帳號：90156446241')">查看匯款資訊</button>
     `;
   }
 
@@ -281,6 +281,41 @@ function updateOrderStatus(orderId, newStatus) {
       if (res.data && res.data.updateOrderStatus === "OK") {
         alert("訂單狀態已更新");
         fetchOrders();
+      } else {
+        alert("更新失敗：" + (res.errors?.[0]?.message || "未知錯誤"));
+      }
+    });
+}
+
+
+function updateProfile() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+
+  if (!name || !email || !phone) {
+    alert("請填寫完整資料");
+    return;
+  }
+
+  fetch("/graphql", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      query: `
+        mutation {
+          updateMe(name: "${name}", email: "${email}", phone: "${phone}")
+        }
+      `
+    })
+  })
+    .then(res => res.json())
+    .then(res => {
+      if (res.data && res.data.updateMe) {
+        alert("資料更新成功");
       } else {
         alert("更新失敗：" + (res.errors?.[0]?.message || "未知錯誤"));
       }
