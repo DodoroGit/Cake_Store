@@ -42,3 +42,11 @@
   border-radius: 8px;
   margin-bottom: 1.5rem;
 }
+
+/* 保留原本內容，加上以下 RWD */
+
+@media (max-width: 768px) {
+  .info-section {
+    padding: 1.5rem 1rem;
+  }
+}

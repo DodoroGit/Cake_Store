@@ -51,3 +51,12 @@
   text-align: center;
   line-height: 1.6;
 }
+
+/* 保留原本內容，加上以下 RWD */
+
+@media (max-width: 480px) {
+  .contact-section img {
+    width: 100%;
+    height: auto;
+  }
+}

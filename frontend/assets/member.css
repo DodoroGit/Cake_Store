@@ -197,3 +197,21 @@
   background-color: #ffb0bd;
   transform: scale(1.05);
 }
+
+/* 保留原本內容，加上以下 RWD */
+
+@media (max-width: 768px) {
+  .member-container {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .profile-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-order-columns {
+    flex-direction: column;
+  }
+}
