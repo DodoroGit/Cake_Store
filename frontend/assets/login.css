@@ -55,7 +55,7 @@
 
 /* 保留原本內容，加上以下 RWD */
 
-@media (max-width: 480px) {
+@media (max-width: 1024px) {
   .auth-form {
     padding: 1.5rem 1rem;
   }

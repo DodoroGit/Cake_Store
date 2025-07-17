@@ -34,7 +34,7 @@
 }
 
 /* RWD */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
     padding: 1rem 1.5rem;
@@ -50,7 +50,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 1024px) {
   .product-grid {
     grid-template-columns: 1fr;
   }
