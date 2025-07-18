@@ -6,7 +6,7 @@
 
 功能提供：**商品瀏覽、購物車下單、會員管理、後台訂單管理、訂單匯出 Excel**。
 
-🔗  網站連結：[https://dopamineforu.com/](https://dopamineforu.com/)
+🔗 網站連結：[https://dopamineforu.com/](https://dopamineforu.com/)
 
 ---
 
