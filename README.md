@@ -1,7 +1,11 @@
 # 🍰 多巴胺甜點工作室 - Dopamine Cake Store
 
-本專案為**前後端分離**的線上蛋糕訂購系統，後端採用 **Golang Gin 框架**，前端使用 **原生 HTML、CSS、JavaScript** 開發。  
+本專案為前後端分離的 Web 線上蛋糕訂購系統
+
+後端採用 **Golang Gin 框架**，前端使用 **原生 HTML、CSS、JavaScript** 開發
+
 伺服器架設於 **AWS EC2**，透過 **Docker 與 Docker Compose 容器化部署**，全站 API 串接採用 **GraphQL**。  
+
 同時透過 **AWS Route 53 申請網域**，使用 **Nginx 反向代理與 HTTPS 憑證申請 (Let's Encrypt)** 進行流量導向與加密。
 
 功能提供：**商品瀏覽、購物車下單、會員管理、後台訂單管理、訂單匯出 Excel**。
