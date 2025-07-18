@@ -1,25 +1,30 @@
 # 🍰 多巴胺甜點工作室 - Dopamine Cake Store
 
-一個支援**前後端分離、GraphQL 全站 API、Docker 容器化部署**的線上蛋糕訂購平台。  
-提供 **商品瀏覽、購物車下單、會員管理、後台訂單管理、訂單匯出 Excel** 等功能。  
+一個**前後端分離**的線上蛋糕訂購系統，後端採用 **Golang Gin 框架**，前端使用 **原生 HTML、CSS、JavaScript** 開發。  
+伺服器架設於 **AWS EC2**，透過 **Docker 與 Docker Compose 容器化部署**，全站 API 串接採用 **GraphQL**。  
+同時透過 **AWS Route 53 申請網域**，使用 **Nginx 反向代理與 HTTPS 憑證申請 (Let's Encrypt)** 進行流量導向與加密。
 
-適合作為全端實戰作品，並可於面試展示。
+功能提供：**商品瀏覽、購物車下單、會員管理、後台訂單管理、訂單匯出 Excel**。
+
+🔗 網站連結：[https://dopamineforu.com/](https://dopamineforu.com/)
 
 ---
 
 ## 🔧 使用技術與架構
 
-| 技術 / 工具               | 說明                               |
-| ------------------------ | ---------------------------------- |
-| **後端 Golang + Gin**     | REST 路由 + GraphQL API            |
-| **GraphQL（手寫 Schema）** | 全站資料操作，**無 Codegen，自行撰寫 Resolver** |
-| **PostgreSQL**            | 資料儲存（會員 / 商品 / 訂單）    |
-| **JWT**                   | 會員登入驗證，支援多角色 (Admin / User) |
-| **Excelize**              | 訂單匯出 Excel（支援月份篩選）    |
-| **前端 HTML/CSS/JS**      | 原生語法撰寫，無框架                |
-| **Nginx**                 | 前端靜態檔案服務                   |
-| **Docker / Docker Compose** | 完整容器化，快速部署               |
-| **AWS EC2 + Route 53**    | 雲端主機部署，支援自有網域與 HTTPS |
+| 分類              | 技術 / 工具                     | 說明 |
+| ----------------- | ------------------------------- | ---------------------------------------- |
+| **後端**          | Golang + Gin                    | REST 路由整合 **GraphQL API**（全站資料操作） |
+|                   | GraphQL（手寫 Schema）         | **無 Codegen，自行撰寫 Resolver 與 Schema** |
+|                   | PostgreSQL                      | 會員、商品、訂單資料儲存 |
+|                   | JWT                             | 會員驗證，支援多角色（Admin / User） |
+|                   | Excelize                        | 後台訂單匯出 Excel（支援月份篩選） |
+| **前端**          | HTML / CSS / JavaScript         | **純原生語法撰寫**，無框架 |
+| **部署與運維**     | Nginx                           | 前端靜態檔案服務，並進行反向代理 |
+|                   | Docker / Docker Compose         | 容器化部署，拆分前端、後端、資料庫微服務 |
+|                   | AWS EC2                         | 雲端主機部署 |
+|                   | AWS Route 53 + Let's Encrypt    | 申請自有網域，導入 HTTPS 加密 |
+|                   | GitHub Actions（CI/CD）         | 自動化部署：`git pull origin main` → 清除 AWS EC2 舊容器 → `docker-compose up -d --build` 完成容器重建與部署 |
 
 ---
 
@@ -45,33 +50,32 @@
 ### 後端（backend/）
 ```
 backend/
-├── main.go // 入口主程式
-├── database/ // DB 初始化
-├── graph/ // GraphQL Schema / Resolver
-├── models/ // 資料結構（User/Product/Order）
-├── middlewares/ // JWT 驗證
-├── handlers/ // 訂單匯出 Excel
-├── routes/ // 路由註冊
+├── main.go       // 入口主程式
+├── database/     // DB 初始化
+├── graph/        // GraphQL Schema / Resolver
+├── models/       // 資料結構（User/Product/Order）
+├── middlewares/  // JWT 驗證
+├── handlers/     // 訂單匯出 Excel
+├── routes/       // 路由註冊
 ```
 
 ### 前端（frontend/）
 
 ```
 frontend/
-├── index.html // 首頁（商品瀏覽）
-├── delivery.html // 商品專區（支援新增商品功能）
-├── cart.html // 購物車（宅配 / 面交選擇）
-├── register.html // 會員註冊
-├── login.html // 會員登入（JWT 儲存於 localStorage）
-├── member.html // 會員專區（顧客 / 商店主雙畫面）
-├── notice.html // 訂購須知
-├── flow.html // 購物流程
-├── policy.html // 退換貨政策
+├── index.html     // 首頁（商品瀏覽）
+├── delivery.html  // 商品專區（支援新增商品功能）
+├── cart.html      // 購物車（宅配 / 面交選擇）
+├── register.html  // 會員註冊
+├── login.html     // 會員登入（JWT 儲存於 localStorage）
+├── member.html    // 會員專區（顧客 / 商店主雙畫面）
+├── notice.html    // 訂購須知
+├── flow.html      // 購物流程
+├── policy.html    // 退換貨政策
 ├── instagram.html // Instagram 社群頁
-├── line.html // Line 聯絡頁
-├── assets/ // CSS / JS / 圖片資源
+├── line.html      // Line 聯絡頁
+├── assets/        // CSS、JS、圖片資源
 ```
-
 
 ## ⚙️ 系統架構
 
@@ -110,7 +114,7 @@ frontend/
 請先確認已安裝 Docker 與 Docker Compose。
 
 ```bash
-docker-compose up --build
+docker-compose up -d --build
 ```
 
 | 服務              | 說明                       |
