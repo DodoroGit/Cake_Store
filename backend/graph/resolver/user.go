@@ -125,6 +125,10 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 					}
 				}
 
+				if pickupMethod == "宅配寄送" {
+					pickupTime = "宅配寄送無法指定"
+				}
+
 				// 產生訂單編號
 				orderNumber := fmt.Sprintf("ODR-%d-%s", userID, time.Now().Format("20060102150405"))
 
@@ -140,7 +144,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 					VALUES (
 						$1, 
 						CASE WHEN $2 != '' THEN TO_DATE($2, 'YYYY-MM-DD') ELSE NULL END, 
-						$3, $4, NULLIF($5, ''), $6, $7
+						$3, $4, $5, $6, $7
 					)
 					RETURNING id
 				`
